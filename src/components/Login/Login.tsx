@@ -39,12 +39,10 @@ const Login:FC<CommonProps> = (props) => {
     const onSubmit = (value:ValueForm) => {
         props.getAuth(value)
     }
-
-    if(props.isAuth) return <Redirect to="/search"/>
-
+    if(props.isAuth) return <Redirect to='/reader'/>
     return (
         <div className={c.formWrapper}>
-            <h1>Login</h1>
+            <h1 className={c.title}>Login</h1>
             <LoginForm onSubmit={onSubmit}/>
         </div>
     )
