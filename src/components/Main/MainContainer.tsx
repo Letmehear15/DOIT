@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../../redux/reduxStore'
-import Reader from './Reader'
+import Reader from './Main'
 
 const ReaderContainer:FC<commonProps> = ({role, login}) => {
     return (

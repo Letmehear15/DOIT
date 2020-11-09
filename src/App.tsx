@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { connect } from 'react-redux';
 import Login from './components/Login/Login'
-import ReaderContainer from './components/Reader/ReaderContainer';
+import ReaderContainer from './components/Main/MainContainer';
 import { RootState } from './redux/reduxStore';
 import {
   Route,

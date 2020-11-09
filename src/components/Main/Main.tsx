@@ -1,15 +1,16 @@
 import React from 'react';
 import Menu from '../Menu/Menu'
-import Cards from './Cards'
+import Cards from '../Cards/Cards'
 
 const magazines = [
   {
       id: 1,
       name: 'magaz1',
+      autor: 'Alex',
       descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
       comments: [
-          {id:1, text: 'shit'},
-          {id:2, text: 'not shit'},
+          {id:1, text: 'hey'},
+          {id:2, text: 'how are you'},
           {id:3, text: 'ahahhaha'},
           {id:4, text: 'hiiii'},
           {id:5, text: 'goooood'},
@@ -18,10 +19,11 @@ const magazines = [
   {
       id: 2,
       name: 'magaz2',
+      autor: 'Alex',
       descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
       comments: [
-          {id:1, text: 'shit'},
-          {id:2, text: 'not shit'},
+          {id:1, text: 'hey'},
+          {id:2, text: 'how are you'},
           {id:3, text: 'ahahhaha'},
           {id:4, text: 'hiiii'},
           {id:5, text: 'goooood'},
@@ -30,10 +32,11 @@ const magazines = [
   {
       id: 3,
       name: 'magaz3',
+      autor: 'Alex',
       descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
       comments: [
-          {id:1, text: 'shit'},
-          {id:2, text: 'not shit'},
+          {id:1, text: 'hey'},
+          {id:2, text: 'how are you'},
           {id:3, text: 'ahahhaha'},
           {id:4, text: 'hiiii'},
           {id:5, text: 'goooood'},
@@ -42,10 +45,11 @@ const magazines = [
   {
       id: 4,
       name: 'magaz3',
+      autor: 'Alex',
       descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
       comments: [
-          {id:1, text: 'shit'},
-          {id:2, text: 'not shit'},
+          {id:1, text: 'hey'},
+          {id:2, text: 'how are you'},
           {id:3, text: 'ahahhaha'},
           {id:4, text: 'hiiii'},
           {id:5, text: 'goooood'},
