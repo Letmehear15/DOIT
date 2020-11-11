@@ -14,7 +14,7 @@ class UserController extends AbstractController
 {
 
     /**
-     * @Route("/logon", name="Homepage", methods={"GET"})
+     * @Route("/", name="Homepage", methods={"GET"})
      * @param Request $request
      * @return JsonResponse
      */
