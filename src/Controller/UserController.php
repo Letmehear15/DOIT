@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
@@ -42,20 +43,35 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/reg", name="Registration", methods={"POST"})
+     * @Route("/signup", name="SignUp", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
-    public function Registration(Request $request){
-        $login = $request->get('login');
-        $password = $request->get('password');
-        $role = $request->get('role');
-        $name = $request->get('name');
-        $lastname = $request->get('lastname');
-        $email = $request->get('email');
-        $tel = $request->get('tel');
+    public function Registration(Request $request, ValidatorInterface $validator){
+        $entityManager = $this->getDoctrine()->getManager();
 
+        $user = new User();
+        $response = new JsonResponse();
+//TODO make easier
+        $user->setLogin($request->get('login'));
+        $user->setPassword($request->get('password'));
+        $user->setRole($request->get('role'));
+        $user->setName($request->get('name'));
+        $user->setLastname($request->get('lastname'));
+        $user->setEmail($request->get('email'));
+        $user->setTel($request->get('tel'));
 
+        $errors = $validator->validate($user);
+
+        if($errors){
+            $response->setData(['isSave' => true]);
+        }
+        else{
+            $response->setData(['isSave' => false]);
+        }
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return $response;
     }
 
 }
