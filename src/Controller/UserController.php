@@ -31,7 +31,7 @@ class UserController extends AbstractController
 
         $response = new JsonResponse();
         if($user) {
-            $response->setData(['isAuth' => true]);
+            $response->setData([ 'isAuth' => true, 'role' => $user->getRole()]);
         }
         else{
             $response->setData(['isAuth' => false]);
@@ -41,5 +41,21 @@ class UserController extends AbstractController
 
     }
 
+    /**
+     * @Route("/reg", name="Registration", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function Registration(Request $request){
+        $login = $request->get('login');
+        $password = $request->get('password');
+        $role = $request->get('role');
+        $name = $request->get('name');
+        $lastname = $request->get('lastname');
+        $email = $request->get('email');
+        $tel = $request->get('tel');
+
+
+    }
 
 }

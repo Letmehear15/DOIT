@@ -166,7 +166,6 @@ class User implements \JsonSerializable
         return [
             "id" => $this->getId(),
             "login" => $this->getLogin(),
-            "password" => $this->getPassword(),
             "role" => $this->getRole(),
             "name" => $this->getName(),
             "lastname" => $this->getLastname(),
