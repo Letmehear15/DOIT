@@ -64,14 +64,15 @@ class UserController extends AbstractController
         $errors = $validator->validate($user);
 
         if($errors){
+            $entityManager->persist($user);
+            $entityManager->flush();
             $response->setData(['isSave' => true]);
         }
         else{
             $response->setData(['isSave' => false]);
         }
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+
         return $response;
     }
 

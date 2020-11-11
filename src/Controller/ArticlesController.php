@@ -64,13 +64,14 @@ class ArticlesController extends AbstractController
         $errors = $validator->validate($article);
 
         if($errors){
+            $entityManager->persist($article);
+            $entityManager->flush();
             $response->setData(['isSave' => true]);
         }
         else{
             $response->setData(['isSave' => false]);
         }
-        $entityManager->persist($article);
-        $entityManager->flush();
+
 
         return $response;
     }
