@@ -1,23 +1,20 @@
 import { FormAction, stopSubmit } from "redux-form";
+import { getUserAuth } from "../../api/serviceApi";
 import { Auth } from "../../types/Auth";
 import { ActionThunkType, AllActions } from "../reduxStore";
 
 const SETAUTH = 'SETAUTH'
 const SETLOGOUT = 'SETLOGOUT'
 
-const users = [
-    {
-        login: 'alex',
-        password: 'alex',
-        role: 'reader'
-    }
-]
-
 const initialState = {
+    authorId: '',
     login: null as null | string,
     password: null as null | string,
     isAuth: false,
-    role: '' 
+    role: '' ,
+    isAuthor: false,
+    isReader: false,
+    isEditor: false,
 }
 
 export const authReducer = (state=initialState, action:ActionsAuth):StateAuth => {
@@ -25,7 +22,10 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
         case SETAUTH: {
             return {
                 ...state,
-                ...action.payLoad
+                ...action.payLoad,
+                isAuthor: action.payLoad.isAuthor,
+                isReader: action.payLoad.isReader,
+                isEditor: action.payLoad.isEditor,
             }
         }
         case SETLOGOUT: {
@@ -34,7 +34,10 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
                 login: null,
                 password: null,
                 isAuth:false,
-                role:''
+                role:'',
+                isAuthor: false,
+                isReader: false,
+                isEditor: false,
             }
         }
         default: {
@@ -45,7 +48,10 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
 
 const allActionCreaters = {
     setAuth:(payLoad:PayLoad) => ({type:'SETAUTH', payLoad} as const) ,
-    setLogOut:() => ({type:'SETLOGOUT'} as const) 
+    setLogOut:() => {
+        localStorage.removeItem('id')
+        return {type:'SETLOGOUT'} as const
+    }
 }
 
 export const logOut = allActionCreaters.setLogOut;
@@ -53,16 +59,33 @@ export const logOut = allActionCreaters.setLogOut;
 //THUNK//
 /////////
 export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
-    const isAuth = users.some(user => user.login===value.login&&user.password===value.password)
-    if(isAuth) {
+    const data =  await getUserAuth.getAuth(value)
+    
+    if(data.isAuth) {
+        localStorage.setItem('login', `${value.login}`);
+        localStorage.setItem('password', `${value.password}`);
+        let authorId = data.authorId ? data.authorId : ''
         dispatch(allActionCreaters.setAuth({
             isAuth:true,
-            login:value.login,
+            login: value.login,
             password:value.password,
-            role: users[0].role
+            role: data.role,
+            isAuthor: data.isAuthor,
+            isReader: data.isReader,
+            isEditor: data.isEditor,
+            authorId
         }))
     } else {
         dispatch(stopSubmit('login', {_error:'Wrong login or Password'}))
+    }
+}
+
+export const getInit = ():AuthThunkType => async dispatch => {
+    const login = localStorage.getItem('login')
+    const password = localStorage.getItem('password')
+    
+    if(password&&login) {
+        dispatch(getAuth({login,password}))
     }
 }
 
@@ -74,4 +97,8 @@ type PayLoad = {
     password: string
     role:string
     isAuth: boolean
+    isAuthor: boolean,
+    isReader: boolean,
+    isEditor: boolean,
+    authorId: string
 }

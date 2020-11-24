@@ -6,7 +6,23 @@ import {getAuth} from '../../redux/reducers/authReducer'
 import c from './login.module.css';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+    formBtn: {
+        display:'block',
+        width: '100px',
+        height: '30px',
+        border: 'none',
+        backgroundColor: 'rgb(117, 151, 182)',
+        boxShadow: '2px 2px 4px #000',
+        color: '#fff',
+        cursor: 'pointer',
+        outline: 'none',
+        marginTop:'10px'
+    }
+})
 
 const LoginReduxForm:FC<InjectedFormProps<ValueForm>> = (props) => {
     const{handleSubmit, error} = props;
@@ -36,6 +52,9 @@ const LoginForm = reduxForm<ValueForm>({
 
 
 const Login:FC<CommonProps> = (props) => {
+
+    const classes = useStyles()
+
     const onSubmit = (value:ValueForm) => {
         props.getAuth(value)
     }
@@ -44,6 +63,11 @@ const Login:FC<CommonProps> = (props) => {
         <div className={c.formWrapper}>
             <h1 className={c.title}>Login</h1>
             <LoginForm onSubmit={onSubmit}/>
+            <Link to='/register'>
+                <button className={classes.formBtn}>
+                    Register
+                </button>
+            </Link>
         </div>
     )
 }   

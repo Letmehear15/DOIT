@@ -1,68 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Menu from '../Menu/Menu'
 import Cards from '../Cards/Cards'
+import { Articles } from '../../types/Articles';
+import AddIcon from '@material-ui/icons/Add';
+import { makeStyles } from '@material-ui/core/styles';
+import { Fab, Tooltip } from '@material-ui/core';
+import { ModalWindow } from '../Modal/Modal';
 
-const magazines = [
+
+const useStyles = makeStyles({
+  btn: {
+    position: 'fixed',
+    bottom: '20px',
+    right: '30px',
+  },
+})
+
+export const data = [
   {
-      id: 1,
-      name: 'magaz1',
-      autor: 'Alex',
-      descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
-      comments: [
-          {id:1, text: 'hey'},
-          {id:2, text: 'how are you'},
-          {id:3, text: 'ahahhaha'},
-          {id:4, text: 'hiiii'},
-          {id:5, text: 'goooood'},
-      ]
+    id:'1',
+    descr: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius!',
+    comments: [],
+    name: 'Article'
   },
   {
-      id: 2,
-      name: 'magaz2',
-      autor: 'Alex',
-      descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
-      comments: [
-          {id:1, text: 'hey'},
-          {id:2, text: 'how are you'},
-          {id:3, text: 'ahahhaha'},
-          {id:4, text: 'hiiii'},
-          {id:5, text: 'goooood'},
-      ]
-  },
-  {
-      id: 3,
-      name: 'magaz3',
-      autor: 'Alex',
-      descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
-      comments: [
-          {id:1, text: 'hey'},
-          {id:2, text: 'how are you'},
-          {id:3, text: 'ahahhaha'},
-          {id:4, text: 'hiiii'},
-          {id:5, text: 'goooood'},
-      ]
-  },
-  {
-      id: 4,
-      name: 'magaz3',
-      autor: 'Alex',
-      descr:'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam laboriosam magni perferendis pariatur. Consequatur, dicta quisquam placeat explicabo soluta illo qui id, aliquam dolorem sint reiciendis asperiores. Expedita, magnam sint!',
-      comments: [
-          {id:1, text: 'hey'},
-          {id:2, text: 'how are you'},
-          {id:3, text: 'ahahhaha'},
-          {id:4, text: 'hiiii'},
-          {id:5, text: 'goooood'},
-      ]
+    id:'2',
+    descr: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius!',
+    comments: [],
+    name: 'Article'
   }
 ]
 
-export default function Reader(props:ownProps) {  
+const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId}:ownProps) => {  
+  const classes = useStyles()
+
+  const [open, setOpen] = useState(false);
+  const [disabledButton, setButton] = useState(true);
+
+  const handleModal = () => {
+    setButton(true)
+    setOpen(!open)
+  }
+
+  const onSave = () => {
+    return 0
+  }
+
   return (
-    <>
-      <Menu login={props.login} role={props.role}/>
+    <div>
+      <Menu login={login} role={role}/>
       <div>
-        {magazines.map(mag => {
+        {data.map(mag => {
           return <div className='container' key={mag.id}>
             <Cards
               descr={mag.descr}
@@ -72,11 +60,32 @@ export default function Reader(props:ownProps) {
           </div>
         })}
       </div>
-    </>
+      {isAuthor&&
+        <Tooltip onClick={handleModal} title="Add" aria-label="add" className={classes.btn}>
+          <Fab color="primary" >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+      }
+      <ModalWindow 
+        disabledButton={disabledButton}
+        handleModal={handleModal}
+        open={open}
+        onSave={onSave}
+      />
+    </div>
   );
 }
+
+
+export default Reader
 
 type ownProps = {
   login: string | null
   role: string| null
+  articles: Array<Articles>
+  isAuthor: boolean,
+  isReader: boolean,
+  isEditor: boolean,
+  authorId: string
 }

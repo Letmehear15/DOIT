@@ -33,6 +33,12 @@ const Menu = (props:CommonProps) => {
   const onExit = () => {
     props.logOut()
   }
+
+  const clearLocal = () => {
+    localStorage.removeItem('login')
+    localStorage.removeItem('password')
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -42,7 +48,7 @@ const Menu = (props:CommonProps) => {
           </div>
           <div>
             <Link to="/login" onClick={onExit} className={classes.link}>
-              <Button color="inherit">Exit</Button>
+              <Button onClick={clearLocal} color="inherit">Exit</Button>
             </Link>
           </div>
         </Toolbar>
