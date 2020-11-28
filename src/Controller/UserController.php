@@ -15,24 +15,48 @@ class UserController extends AbstractController
 {
 
     /**
-     * @Route("/logon", name="LogOn", methods={"GET"})
+     * @Route("/logon", name="LogOn", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
     public function isAuth(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace($data);
         $repository = $this->getDoctrine()->getRepository(User::class);
         $login = $request->get('login');
         $password = $request->get('password');
+        //dump($login);
         $user = $repository->findOneBy([
             'login' => $login,
             'password' => $password,
         ]);
 
-
         $response = new JsonResponse();
         if($user) {
-            $response->setData([ 'isAuth' => true, 'role' => $user->getRole()]);
+            //dump($user);
+            $role = $user->getRole();
+            $isRole = '';
+            switch ($role) {
+                case 'author':
+                    $isRole = 'isAuthor';
+                    break;
+                case 'reader':
+                    $isRole = 'isReader';
+                    break;
+                case 'editor':
+                    $isRole = 'isEditor';
+                    break;
+                case 'test':
+                    $isRole = 'isTest';
+                    break;
+                default:
+                    $isRole = 'isAnon';
+                    break;
+
+            }
+
+            $response->setData([ 'isAuth' => true, 'role' => $role, $isRole => true, 'id' => $user->getId()]);
         }
         else{
             $response->setData(['isAuth' => false]);
@@ -48,6 +72,8 @@ class UserController extends AbstractController
      * @return JsonResponse
      */
     public function Registration(Request $request, ValidatorInterface $validator){
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace($data);
         $entityManager = $this->getDoctrine()->getManager();
 
         $user = new User();
@@ -74,6 +100,15 @@ class UserController extends AbstractController
 
 
         return $response;
+    }
+
+    /**
+     * @Route("/articles", name="changeActive", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function change(){
+
     }
 
 }

@@ -22,7 +22,7 @@ class Articles
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $title;
 
     /**
      * @ORM\Column(type="text")
@@ -49,14 +49,14 @@ class Articles
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getTitle(): ?string
     {
-        return $this->name;
+        return $this->title;
     }
 
-    public function setName(string $name): self
+    public function setTitle(string $title): self
     {
-        $this->name = $name;
+        $this->title = $title;
 
         return $this;
     }
@@ -126,17 +126,17 @@ class Articles
     public function jsonSerialize()
     {
         $i = 0;
-        bdump($this->getComments());
+        //dump($this->getComments());
         foreach ($this->getComments() as $c){
             $comments[$i] = $c;
             $i++;
         }
         return [
             "id" => $this->getId(),
-            "name" => $this->getName(),
+            "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "author"=> $this->getAuthor(),
-            "comments" => $comments
+            "comments" => $this->getComments()
         ];
     }
 }
