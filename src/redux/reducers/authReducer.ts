@@ -7,7 +7,7 @@ const SETAUTH = 'SETAUTH'
 const SETLOGOUT = 'SETLOGOUT'
 
 const initialState = {
-    authorId: '',
+    authorId: null as string | null,
     login: null as null | string,
     password: null as null | string,
     isAuth: false,
@@ -23,6 +23,7 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
             return {
                 ...state,
                 ...action.payLoad,
+                authorId: action.payLoad.authorId,
                 isAuthor: action.payLoad.isAuthor,
                 isReader: action.payLoad.isReader,
                 isEditor: action.payLoad.isEditor,
@@ -64,7 +65,7 @@ export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
     if(data.isAuth) {
         localStorage.setItem('login', `${value.login}`);
         localStorage.setItem('password', `${value.password}`);
-        let authorId = data.authorId ? data.authorId : ''
+        let authorId = data.id ? data.id : null
         dispatch(allActionCreaters.setAuth({
             isAuth:true,
             login: value.login,
@@ -100,5 +101,5 @@ type PayLoad = {
     isAuthor: boolean,
     isReader: boolean,
     isEditor: boolean,
-    authorId: string
+    authorId: string | null
 }

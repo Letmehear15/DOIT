@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Field, reduxForm, InjectedFormProps, formValueSelector } from 'redux-form'
 import { ValidatorInput } from '../VaidatorInfo/ValidatorInfo';
 import { required } from '../../validators/validators';
@@ -74,13 +74,15 @@ const Login:FC<CommonProps> = (props) => {
     }
     
     return (
-        <div className={c.formWrapper}>
-            <h1 className={c.title}>Register</h1>
-            <LoginForm onSubmit={onSubmit}/>
-            <Link to='/login'>
-                <button className={classes.formBtn}>Back</button>
-            </Link>
-            {isOk && <div> YOU REGISTERED </div>}
+        <div style={{height:'100vh', paddingTop:'100px'}}>
+            <div className={c.formWrapper}>
+                <h1 className={c.title}>Register</h1>
+                <LoginForm onSubmit={onSubmit}/>
+                <Link to='/login'>
+                    <button className={classes.formBtn}>Back</button>
+                </Link>
+                {isOk && <div> YOU REGISTERED </div>}
+            </div>
         </div>
     )
 }  

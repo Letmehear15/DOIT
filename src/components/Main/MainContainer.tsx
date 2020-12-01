@@ -1,15 +1,15 @@
 import React, { FC, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../../redux/reduxStore'
-import { Articles } from '../../types/Articles'
+import { Articles, SaveNewArticle } from '../../types/Articles'
 import Main from './Main'
-import {getArticles} from '../../redux/reducers/articlesReducer'
+import {getArticles,postArticle} from '../../redux/reducers/articlesReducer'
 
-const ReaderContainer:FC<commonProps> = ({role, login, articles, isEditor, isAuthor, isReader, getArticles, authorId = ''}) => {
+const ReaderContainer:FC<commonProps> = ({role, login, articles, isEditor, isAuthor, isReader, getArticles, postArticle, authorId}) => {
 
     useEffect(() => {
         getArticles()
-    }, [articles])
+    }, [])
 
     return (    
         <div>
@@ -21,6 +21,7 @@ const ReaderContainer:FC<commonProps> = ({role, login, articles, isEditor, isAut
                 isAuthor={isAuthor}
                 isReader={isReader}
                 authorId={authorId}
+                postArticle={postArticle}
             />
         </div>
     )
@@ -38,7 +39,7 @@ const mapStateToProps = (state:RootState):mapState => {
     }
 }
 
-export default connect<mapState, mapDispath, {}, RootState>(mapStateToProps, {getArticles})(ReaderContainer)
+export default connect<mapState, mapDispath, {}, RootState>(mapStateToProps, {getArticles,postArticle})(ReaderContainer)
 
 type mapState = {
     role: string
@@ -47,10 +48,11 @@ type mapState = {
     isAuthor: boolean,
     isReader: boolean,
     isEditor: boolean,
-    authorId: string
+    authorId: string | null
 }
 type mapDispath = {
     getArticles: () => void
+    postArticle: (value:SaveNewArticle) => void
 }
 
 type commonProps = mapState&mapDispath

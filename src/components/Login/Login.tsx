@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
 import { Link, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
+import { Height } from '@material-ui/icons';
 
 const useStyles = makeStyles({
     formBtn: {
@@ -60,14 +61,16 @@ const Login:FC<CommonProps> = (props) => {
     }
     if(props.isAuth) return <Redirect to='/reader'/>
     return (
-        <div className={c.formWrapper}>
-            <h1 className={c.title}>Login</h1>
-            <LoginForm onSubmit={onSubmit}/>
-            <Link to='/register'>
-                <button className={classes.formBtn}>
-                    Register
-                </button>
-            </Link>
+        <div style={{height:'100vh', paddingTop:'100px'}}>
+            <div className={c.formWrapper}>
+                <h1 className={c.title}>Login</h1>
+                <LoginForm onSubmit={onSubmit}/>
+                <Link to='/register'>
+                    <button className={classes.formBtn}>
+                        Register
+                    </button>
+                </Link>
+            </div>
         </div>
     )
 }   

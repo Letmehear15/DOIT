@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Menu from '../Menu/Menu'
 import Cards from '../Cards/Cards'
-import { Articles } from '../../types/Articles';
+import { Articles, SaveNewArticle } from '../../types/Articles';
 import AddIcon from '@material-ui/icons/Add';
 import { makeStyles } from '@material-ui/core/styles';
 import { Fab, Tooltip } from '@material-ui/core';
@@ -31,31 +31,34 @@ export const data = [
   }
 ]
 
-const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId}:ownProps) => {  
+const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId, postArticle}:ownProps) => {  
   const classes = useStyles()
 
   const [open, setOpen] = useState(false);
-  const [disabledButton, setButton] = useState(true);
 
   const handleModal = () => {
-    setButton(true)
     setOpen(!open)
   }
 
-  const onSave = () => {
-    return 0
+  const onSave = ({title, descr}:SaveNewArticle) => {
+    postArticle({title, descr, authorId})
+    setOpen(false)
   }
 
   return (
     <div>
       <Menu login={login} role={role}/>
       <div>
-        {data.map(mag => {
+        {articles.map(mag => {
+
           return <div className='container' key={mag.id}>
             <Cards
               descr={mag.descr}
               comments={mag.comments}
-              name={mag.name}
+              name={mag.title}
+              id={mag.id}
+              // @ts-ignore
+              author={mag.autor}
             />
           </div>
         })}
@@ -67,12 +70,13 @@ const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId}:
           </Fab>
         </Tooltip>
       }
-      <ModalWindow 
-        disabledButton={disabledButton}
-        handleModal={handleModal}
-        open={open}
-        onSave={onSave}
-      />
+      {open&&
+        <ModalWindow 
+          handleModal={handleModal}
+          open={open}
+          onSave={onSave}
+        />
+      }
     </div>
   );
 }
@@ -87,5 +91,6 @@ type ownProps = {
   isAuthor: boolean,
   isReader: boolean,
   isEditor: boolean,
-  authorId: string
+  authorId: string | null
+  postArticle: (value:SaveNewArticle) => void
 }

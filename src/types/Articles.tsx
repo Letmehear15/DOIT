@@ -3,8 +3,14 @@ import { CommentsType } from "./Comments";
 
 export type Articles = {
     id: number
-    name: string
+    title: string
     descr: string
     comments: Array<CommentsType>
-    autor: Autor
+    author: Autor
+}
+
+export type SaveNewArticle = {
+    authorId?: string | null
+    title: string
+    descr: string
 }

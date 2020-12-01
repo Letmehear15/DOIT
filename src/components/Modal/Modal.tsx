@@ -1,15 +1,16 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import { TextareaAutosize } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import { SaveNewArticle } from '../../types/Articles';
+import { useTheme } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme:Theme)=>({
     paper: {
         position: 'absolute',
         width: '600px',
-        backgroundColor:'#fff',
+        backgroundColor: theme.palette.background.paper,
         border: 'none',
         left:'50%',
         top:'50%',
@@ -28,19 +29,6 @@ const useStyles = makeStyles({
     readerInput: {
         display:'none',
     },
-    readerLabel: {
-        display:'block',
-        width:'130px',
-        backgroundColor:'#3f51b5',
-        cursor:'pointer',
-        color: '#fff',
-        boxShadow:'0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
-        padding:'10px',
-        margin:'30px 0'
-    },
-    readerLabelDisable: {
-        color: '#bdbdbd'
-    },
     btns: {
         width: '100%',
         display:'flex',
@@ -54,10 +42,13 @@ const useStyles = makeStyles({
     title: {
         marginBottom: 20
     }
-})
+}))
 
 export const ModalWindow:FC<OwnProps> = (props) => {
     const classes = useStyles()
+    const theme = useTheme()
+    const [title, setTitle] = useState('')
+    const [descr, setDescr] = useState('')
 
     return (
         <Modal
@@ -67,20 +58,24 @@ export const ModalWindow:FC<OwnProps> = (props) => {
             aria-describedby="simple-modal-description"
         >
             <form className={`${classes.paper}`}>
-                <h2 className={classes.modalTitle}>New article</h2>
+                <h2 style={{color:theme.palette.primary.light}} className={classes.modalTitle}>New article</h2>
                 <TextField 
                     label="Title" 
                     className={classes.title} 
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                 />
                 <TextField
-                    id="outlined-multiline-static"
+                    id="outlined-multiline-flexible"
                     label="Description"
                     multiline
                     rows={15}
                     variant="outlined"
+                    value={descr}
+                    onChange={(e) => setDescr(e.target.value)}
                 />
                 <div className={classes.btns}>
-                    <Button variant="contained" color="primary" disabled={props.disabledButton} onClick={props.onSave}>Save</Button>
+                    <Button variant="contained" color="primary" disabled={title&&descr?false:true} onClick={() => props.onSave({title, descr})}>Save</Button>
                     <Button variant="contained" color="secondary" onClick={props.handleModal}>Cancel</Button>
                 </div>
             </form>
@@ -90,7 +85,6 @@ export const ModalWindow:FC<OwnProps> = (props) => {
 
 type OwnProps = {
     open: boolean
-    disabledButton: boolean
     handleModal: () => void
-    onSave: () => void
+    onSave: (value:SaveNewArticle) => void
 }
