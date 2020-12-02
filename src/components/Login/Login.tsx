@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
 import { Link, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
-import { Height } from '@material-ui/icons';
 
 const useStyles = makeStyles({
     formBtn: {

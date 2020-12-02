@@ -29,7 +29,7 @@ const App:FC<CommonProps> = (props) => {
     <ThemeProvider theme={theme}>
       <Paper style={{height:'100%'}}>
         <Route path='/reader' component={() => <ReaderContainer/>}/>
-        <Route exact path='/login' component={() => <Login/>}/>
+        <Route path='/login' component={() => <Login/>}/>
         <Route path='/register' component={() => <Register/>}/>
         <Route path='/article/:id'><Article/></Route>
         {!props.isAuth?<Redirect to='login'/>:null}
