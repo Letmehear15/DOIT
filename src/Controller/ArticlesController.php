@@ -43,6 +43,7 @@ class ArticlesController extends AbstractController
      * @return JsonResponse
      */
     public function articleDelete(Request $request){
+        //TODO delete comments
         $entityManager = $this->getDoctrine()->getManager();
         $response = new JsonResponse();
         $data = json_decode($request->getContent(), true);
@@ -122,14 +123,26 @@ class ArticlesController extends AbstractController
         //$articles = $this->getDoctrine()->getRepository(Articles::class)->findAll();
         $articlesRep = $this->getDoctrine()->getRepository(Articles::class)->findAll();
         $i = 0;
+        $articles = NULL;
         foreach ($articlesRep as $a) {
+            $comments = $a->getComments();
+            $j=0;
+            $commentsjson = NULL;
+            foreach ($comments as $c) {
 
+                $commentsjson[$j] = array(
+                    'id' => $c->getId(),
+                    'autor' => $c->getAuthor(),
+                    'text' => $c->getComment()
+                );
+                $j++;
+            }
             $article = array(
                 'id'=>$a->getId(),
                 'title'=>$a->getTitle(),
                 'autor'=>$a->getAuthor(),
                 'descr'=>$a->getDescription(),
-                'comments'=>$a->getComments(),
+                'comments'=> $commentsjson,
             );
             $articles[$i] = $article;
             $i++;
