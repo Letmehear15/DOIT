@@ -52,4 +52,44 @@ class CommentsController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * @Route("/article/{id}/comments/{comment_id}", name="deleteComment", methods={"POST"})
+     * @param int $id
+     * @param int $comment_id
+     * @param Request $request
+     * @return JsonResponse
+     */
+	public function deleteComment(int $id, int $comment_id, Request $request)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $response = new JsonResponse();
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace($data);
+
+        $comments = $this->getDoctrine()->getRepository(Comments::class);
+        $comment = $comments->findOneBy([
+            'id' => $comment_id
+        ]);
+
+        $articles = $this->getDoctrine()->getRepository(Articles::class);
+        $article = $articles->findOneBy([
+            'id' => $id
+        ]);
+
+        if($article AND $comment) {
+            $article->removeComment($comment);
+            $entityManager->remove($comment);
+            $entityManager->flush();
+            $response->setData(['isDelete' => true]);
+        }
+        else{
+            $response->setData(['isDelete' => false]);
+        }
+
+        return $response;
+    }
+
+
+
 }

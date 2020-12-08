@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 //TODO all request
 class ArticlesController extends AbstractController
 {
+
     /**
      * @Route("/article/{id}", name="article", methods={"GET"})
      * @param int $id
@@ -29,6 +30,8 @@ class ArticlesController extends AbstractController
         $article = $articles->findOneBy([
             'id' => $id
         ]);
+		
+
         if($article){
             $response->setData($article->jsonSerialize());
         }
@@ -58,18 +61,19 @@ class ArticlesController extends AbstractController
             $entityManager->flush();
             $response->setData(['isDelete' => true]);
 
-        }
-        else{
+        }        else{
             $response->setData(['isDelete' => false]);
         }
+
         return $response;
     }
     /**
-     * @Route("/article/update", name="articleUpdate", methods={"POST"})
+     * @Route("/article/{id}/update", name="articleUpdate", methods={"POST"})
      * @param Request $request
+	 * @param int $id
      * @return JsonResponse
      */
-    public function articleUpdate(Request $request, ValidatorInterface $validator){
+    public function articleUpdate(Request $request, ValidatorInterface $validator, int $id){
         $response = new JsonResponse();
         $entityManager = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(), true);
@@ -77,18 +81,18 @@ class ArticlesController extends AbstractController
         $repository = $this->getDoctrine()->getRepository(Articles::class); //TODO articles
         $users = $this->getDoctrine()->getRepository(User::class);
         $article = $repository->findOneBy([
-            'id' => $request->get('id')
+            'id' => $id
         ]);
-        $author = $users->findOneBy([
+       /* $author = $users->findOneBy([
             'id' => $request->get('autor')
-        ]);
+        ]);*/
         //TODO trycatch
 
         if($article){
-            if($author) {
+            if($request->get('title') AND $request->get('descr')) {
                 $article->setTitle($request->get('title'));
                 $article->setDescription($request->get('descr'));
-                $article->setAuthor($author);
+               // $article->setAuthor($author);
 
                 $errors = $validator->validate($article);
                 if ($errors) {
@@ -123,11 +127,11 @@ class ArticlesController extends AbstractController
         //$articles = $this->getDoctrine()->getRepository(Articles::class)->findAll();
         $articlesRep = $this->getDoctrine()->getRepository(Articles::class)->findAll();
         $i = 0;
-        $articles = NULL;
+        $articles = array();
         foreach ($articlesRep as $a) {
             $comments = $a->getComments();
             $j=0;
-            $commentsjson = NULL;
+            $commentsjson = array();
             foreach ($comments as $c) {
 
                 $commentsjson[$j] = array(
@@ -137,6 +141,7 @@ class ArticlesController extends AbstractController
                 );
                 $j++;
             }
+			
             $article = array(
                 'id'=>$a->getId(),
                 'title'=>$a->getTitle(),

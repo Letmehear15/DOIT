@@ -1,3 +1,6 @@
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET,POST,PUT,PATCH,OPTION,DELETE"
+Header set Access-Control-Allow-Headers "content-type"
 # Use the front controller as index file. It serves as a fallback solution when
 # every other rewrite/redirect fails (e.g. in an aliased environment without
 # mod_rewrite). Additionally, this reduces the matching process for the
