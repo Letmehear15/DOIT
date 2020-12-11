@@ -8,7 +8,7 @@ const SETLOGOUT = 'SETLOGOUT'
 
 const initialState = {
     authorId: null as string | null,
-    login: null as null | string,
+    login: "alex" as null | string,
     password: null as null | string,
     isAuth: false,
     role: '' ,

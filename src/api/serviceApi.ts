@@ -1,11 +1,13 @@
 import axios from 'axios';
-import { Articles, SaveNewArticle } from '../types/Articles';
+import { ArticleEdit, Articles, SaveNewArticle } from '../types/Articles';
 import { Auth, Register } from '../types/Auth';
+import { CommentsType } from '../types/Comments';
 
 const baseURL = 'http://195.113.207.163/~reshetov/DOIT'
 
 type API<T> = {
     articles: Array<T>
+    comment: Array<CommentsType>
 }
 
 export const getUserAuth = {
@@ -28,7 +30,13 @@ export const articlesAPI = {
         return axios.get(`${baseURL}/article/${id}`).then(res=>res.data)
     },
     deleteArticle(id:string) {
-        return axios.delete(`${baseURL}/articles`,{headers: {id}})
+        return axios.post(`${baseURL}/articles`, {id})
+    },
+    postComment(id: string|number, autor:string|null, text:string) {
+        return axios.post(`${baseURL}/article/${id}/comment/new`, {id, text, autor}).then(res=>res.data)
+    },
+    editArticle({title, descr, id}:ArticleEdit) {
+        return axios.post(`${baseURL}/article/${id}/update`, {title, descr}).then(res=>res.data)
     }
 }
 

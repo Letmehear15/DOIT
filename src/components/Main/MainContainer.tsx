@@ -4,12 +4,15 @@ import { RootState } from '../../redux/reduxStore'
 import { Articles, SaveNewArticle } from '../../types/Articles'
 import Main from './Main'
 import {getArticles,postArticle} from '../../redux/reducers/articlesReducer'
+import { Redirect } from 'react-router-dom'
 
-const ReaderContainer:FC<commonProps> = ({role, login, articles, isEditor, isAuthor, isReader, getArticles, postArticle, authorId}) => {
+const ReaderContainer:FC<commonProps> = ({isAuth, role, login, articles, isEditor, isAuthor, isReader, getArticles, postArticle, authorId}) => {
 
     useEffect(() => {
         getArticles()
     }, [])
+
+    if(!isAuth) return <Redirect to='/login'/>
 
     return (    
         <div>
@@ -35,7 +38,8 @@ const mapStateToProps = (state:RootState):mapState => {
         isAuthor: state.auth.isAuthor,
         isReader: state.auth.isReader,
         isEditor: state.auth.isEditor,
-        authorId: state.auth.authorId
+        authorId: state.auth.authorId,
+        isAuth: state.auth.isAuth
     }
 }
 
@@ -49,6 +53,7 @@ type mapState = {
     isReader: boolean,
     isEditor: boolean,
     authorId: string | null
+    isAuth: boolean
 }
 type mapDispath = {
     getArticles: () => void

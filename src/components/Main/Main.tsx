@@ -44,7 +44,7 @@ const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId, 
     postArticle({title, descr, authorId})
     setOpen(false)
   }
-
+  
   return (
     <div>
       <Menu login={login} role={role}/>
@@ -54,11 +54,11 @@ const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId, 
           return <div className='container' key={mag.id}>
             <Cards
               descr={mag.descr}
-              comments={mag.comments}
               name={mag.title}
               id={mag.id}
               // @ts-ignore
               author={mag.autor}
+              login={login}
             />
           </div>
         })}

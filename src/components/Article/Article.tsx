@@ -1,22 +1,25 @@
-import React, { FC, useEffect } from 'react'
-import { connect } from 'react-redux'
+import React, { FC, useEffect, useState } from 'react'
+import { connect, useDispatch } from 'react-redux'
 import { RootState } from '../../redux/reduxStore'
 import Menu from '../Menu/Menu'
-import { Button, CardContent, Paper, Typography } from '@material-ui/core'
+import { Button, CardContent, Paper, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import img from '../../assets/img.jpg'
-import { Link, useParams } from 'react-router-dom'
-import {getFullArticle,deleteArticle} from '../../redux/reducers/articlesReducer'
+import { Link, Redirect, useParams } from 'react-router-dom'
+import {getFullArticle,deleteArticle, editArticle} from '../../redux/reducers/articlesReducer'
 import { Articles } from '../../types/Articles'
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Comments from '../Cards/Comments'
 
 const useStyles = makeStyles({
     paper: {
         marginTop: '20px',
         padding: 0,
-        paddingBottom:'10px'
+        paddingBottom:'10px',
+        display:'flex',
+        flexDirection: 'column'
     },
     media: {
         height: 140,
@@ -58,45 +61,102 @@ const useStyles = makeStyles({
     deleteIcon: {
         display: 'block',
         marginRight: '10px'
+    },
+    comments: {
+        overflow:'scroll',
+        height:300
+    },
+    descrInput: {
+        width:'60%'
     }
 })
   
 
-const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article, deleteArticle}) => {
+const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article, deleteArticle, isLoad, isEditor}) => {
+
     const  { id }:id  = useParams()
     const classes = useStyles()
+
+    const [edit, setEdit] = useState(false)
+    const [title, setTitle] = useState('')
+    const [descr, setDescr] = useState('')
+
+    const dispatch = useDispatch()
+    
     useEffect(() => {
         getFullArticle(id)
-    },[])
+        setTitle(article.title)
+        setDescr(article.descr)
+    },[article.title, article.descr])
 
-    if(!article.author) return <CircularProgress/>
+    if(isLoad) return <CircularProgress/>
+
+    const onEdit = () => {
+        setEdit(!edit)
+        if(edit) {
+            dispatch(editArticle({id, title, descr}))
+        }
+    }
     
-    const currentAuthor = login===article.author.login
+    const onDelete = () => {
+        deleteArticle(id)
+        return <Redirect to='/reader'/>
+    }
+
+    const currentAuthor = login === article.author.login
 
     return (
-        <div style={{height:'100vh'}}>
+        <div style={{paddingBottom: 10, minHeight: '100vh'}}>
             <Menu login={login} role={role}/>
 
             <Paper elevation={3} className={`container ${classes.paper}`}>
                 <div className={classes.img}></div>
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        {article.title}
-                    </Typography>
-                    <span className={classes.author}>
-                        Author: {article.author.login}
-                    </span>
-                    <Typography className={classes.descr} variant="body2" color="textSecondary" component="p">
-                        {article.descr}
-                    </Typography>
-                </CardContent>
-                {
-                    currentAuthor&&
-                    <div className={classes.helpIcon}>
-                        <DeleteIcon onClick={() => deleteArticle(id)} className={classes.deleteIcon} color="secondary" style={{cursor:'pointer'}}/>
-                        <EditIcon color="primary" style={{cursor:'pointer'}}/>
-                    </div>
-                }
+                <div style={{marginBottom:40}}>
+                    <CardContent>
+                        {
+                            !edit ?
+                            <Typography gutterBottom variant="h5" component="h2">
+                                {article.title}
+                            </Typography>
+                            :
+                            <TextField 
+                                label="title" 
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                        }
+                        <span className={classes.author}>
+                            Author: {article.author.login}
+                        </span>
+                        {
+                            !edit ? 
+                            <Typography className={classes.descr} variant="body2" color="textSecondary" component="p">
+                                {article.descr}
+                            </Typography>
+                            :
+                            <TextField
+                                id="outlined-multiline-flexible"
+                                label="Description"
+                                multiline
+                                rows={15}
+                                variant="outlined"
+                                value={descr}
+                                onChange={(e) => setDescr(e.target.value)}
+                                className={classes.descrInput}
+                            />
+                        }
+                    </CardContent>
+                    {
+                        (currentAuthor||isEditor)&&
+                        <div className={classes.helpIcon}>
+                            <DeleteIcon onClick={onDelete} className={classes.deleteIcon} color="secondary" style={{cursor:'pointer'}}/>
+                            <EditIcon onClick={ onEdit } color="primary" style={{cursor:'pointer'}}/>
+                        </div>
+                    }
+                </div>
+                <div className={classes.comments}>
+                    <Comments id={id} login={login}/>
+                </div>
             </Paper>
             <Link className={classes.link} to='/reader'>
                 <Button variant="contained" color="primary" className={classes.btn}>
@@ -111,7 +171,9 @@ const mapState = (state:RootState):MapState => {
     return {
         role: state.auth.role,
         login: state.auth.login,
-        article: state.articles.fullArticle
+        article: state.articles.fullArticle,
+        isLoad: state.articles.isLoad,
+        isEditor: state.auth.isEditor
     }
 }
 
@@ -123,6 +185,8 @@ type MapState = {
     login: string | null
     role: string| null
     article: Articles
+    isLoad: boolean
+    isEditor: boolean
 }
 
 type MapDispatch = {

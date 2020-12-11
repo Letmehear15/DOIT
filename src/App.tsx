@@ -12,11 +12,13 @@ import { getInit } from './redux/reducers/authReducer';
 import Article from './components/Article/Article';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
+import Home from './components/Home/Blog';
+import About from './components/About/About';
 
 const App:FC<CommonProps> = (props) => {
 
   useEffect(() => {
-    props.getInit()
+    // props.getInit()
   }, [])
 
   const theme = createMuiTheme({
@@ -27,13 +29,14 @@ const App:FC<CommonProps> = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Paper style={{height:'100%'}}>
+      <Paper >
+        <Route path='/home' component={() => <Home/>}/>
+        <Route path='/about' component={() => <About/>}/>
         <Route path='/reader' component={() => <ReaderContainer/>}/>
-        <Route path='/login' component={() => <Login/>}/>
+        <Route exact path='/login' component={() => <Login/>}/>
         <Route path='/register' component={() => <Register/>}/>
         <Route path='/article/:id'><Article/></Route>
-        {!props.isAuth?<Redirect to='login'/>:null}
-        <Redirect from='/' to='login'/>
+        <Redirect from='/' to='/home'/>
       </Paper>
     </ThemeProvider>
   );

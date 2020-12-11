@@ -1,24 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import img from '../../assets/img.jpg';
-import CommentIcon from '@material-ui/icons/Comment';
-import Comments from './Comments'
-import { CommentsType } from '../../types/Comments';
 import { Link } from 'react-router-dom';
 import { Autor } from '../../types/Autor';
+import { useDispatch } from 'react-redux';
+import {setLoad} from '../../redux/reducers/articlesReducer'
 
 
 const useStyles = makeStyles((theme:Theme) => createStyles({
   root: {
     width: '60%',
     marginTop:'30px',
-    height:'400px',
     display:'flex',
     flexDirection:'column',
     justifyContent: 'space-between',
@@ -31,7 +28,8 @@ const useStyles = makeStyles((theme:Theme) => createStyles({
     display:'flex',
     justifyContent: 'space-between',
     marginLeft:'10px',
-    padding: 0
+    padding: 0,
+    paddingTop:'10px'
   },
   descr: {
     overflow:'hidden',
@@ -52,14 +50,12 @@ const useStyles = makeStyles((theme:Theme) => createStyles({
 
 export default function MediaCard(props:CommonProps) {
     const classes = useStyles();
-    const [isComment, setComment] = useState(false)
     
-    const onComment = () => {
-        setComment(!isComment)
-    }
+    const dispatch = useDispatch()
+
     return (
         <Card className={classes.root}>
-            <Link to={`/article/${props.id}`} className={classes.link}>
+            <Link to={`/article/${props.id}`} className={classes.link} onClick={() => dispatch(setLoad(true))}>
                 <CardActionArea>
                     <CardMedia
                         className={classes.media}
@@ -78,10 +74,6 @@ export default function MediaCard(props:CommonProps) {
                     </CardContent>
                 </CardActionArea>
             </Link>
-            <CardActions className={classes.icons}>
-                <CommentIcon onClick={() => onComment()}/>
-            </CardActions>
-            {/* {isComment? <Comments comments={props.comments}/>:null} */}
         </Card>
     )
 }
@@ -90,7 +82,7 @@ export default function MediaCard(props:CommonProps) {
 type CommonProps = {
     name: string
     descr: string
-    comments: Array<CommentsType>
     id: string | number
     author: Autor
+    login: string | null
 }

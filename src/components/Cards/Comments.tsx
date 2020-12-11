@@ -1,9 +1,11 @@
-import React, { FC, useState } from 'react'
-import { CommentsType } from '../../types/Comments'
+import React, { FC, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
-import { nanoid } from 'nanoid'
+import { useDispatch, useSelector } from 'react-redux';
+import { postComments } from '../../redux/reducers/articlesReducer';
+import { getComments } from '../../redux/reducers/articlesReducer';
+import {RootState} from '../../redux/reduxStore'
 
 const useStyles = makeStyles({
     wrapper: {
@@ -24,34 +26,39 @@ const useStyles = makeStyles({
         marginTop: '30px'
     },
     input: {
-        width:'100%'
+        width:'90%'
     },
     icon: {
         position: 'absolute',
         right: '10px',
         top: '50%',
         transform:'translateY(-50%)'
+    },
+    author: {
+        display:'block',
+        color:'grey'
     }
 })
 
 const Comments:FC<CommonProps> = (props) => {
+
     const classes = useStyles()
-    const [comments, setComments] = useState(props.comments)
     const [text, setText] = useState('')
 
+    const dispatch = useDispatch()
+    const comments = useSelector((state:RootState) => state.articles.comments)
+    
+    useEffect(() => {
+        dispatch(getComments(props.id))
+    },[])
 
-    const onComment = (value:string) => {
-        setComments((prev) => ([
-            ...prev,
-            {
-                id:nanoid(),
-                text:value
-            }
-        ]))
+    const onComment = (id: string|number, autor:string|null, text:string) => {
         setText('')
+        dispatch(postComments(id, autor, text))
     }
 
-    const items = comments.map(comment => <div className={classes.comment}>{comment.text}</div>)
+    const items = comments.map(comment => <div key={comment.id} className={classes.comment}> <span className={classes.author}>{comment.autor}</span> {comment.text}</div>)
+
     return (
         <div className={classes.wrapper}>
             <div className={classes.comments}>Comments</div>
@@ -63,7 +70,7 @@ const Comments:FC<CommonProps> = (props) => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)} 
                     className={classes.input} 
                     value={text}/>
-                <SendIcon className={classes.icon} onClick={() => onComment(text)}/>
+                <SendIcon className={classes.icon} onClick={() => onComment(props.id, props.login, text)}/>
             </div>
         </div>
     )
@@ -71,7 +78,7 @@ const Comments:FC<CommonProps> = (props) => {
 
 export default Comments
 
-
 type CommonProps = {
-    comments:Array<CommentsType>
+    login: string | null
+    id: string|number
 }
