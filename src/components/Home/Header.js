@@ -76,7 +76,6 @@ function Header({ title, login, logOut, isAbout }) {
       {isAbout?<Toolbar component="nav" variant="dense" className={classes.toolbarSecondary}>
           <Link
             color="inherit"
-            noWrap
             variant="body2"
             to='/about'
             className={classes.toolbarLink}
@@ -88,7 +87,6 @@ function Header({ title, login, logOut, isAbout }) {
         <Toolbar component="nav" variant="dense" style={{justifyContent:'flex-start'}}>
           <Link
             color="inherit"
-            noWrap
             variant="body2"
             to='/home'
             className={classes.toolbarLink}
