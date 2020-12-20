@@ -47,7 +47,10 @@ const Menu = (props:CommonProps) => {
             {props.login} ({props.role})
           </div>
           <div>
-            <Link to="/login" onClick={onExit} className={classes.link}>
+            <Link to="/home" className={classes.link}>
+              <Button onClick={clearLocal} color="inherit">Back to home page</Button>
+            </Link>
+            <Link to="/home" onClick={onExit} className={classes.link}>
               <Button onClick={clearLocal} color="inherit">Exit</Button>
             </Link>
           </div>

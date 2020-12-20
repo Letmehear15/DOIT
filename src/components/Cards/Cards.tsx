@@ -54,27 +54,27 @@ export default function MediaCard(props:CommonProps) {
     const dispatch = useDispatch()
 
     return (
-        <Card className={classes.root}>
-            <Link to={`/article/${props.id}`} className={classes.link} onClick={() => dispatch(setLoad(true))}>
-                <CardActionArea>
-                    <CardMedia
-                        className={classes.media}
-                        image={img}
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {props.name}
-                        </Typography>
-                        <span className={classes.author}>
-                            Author: {props.author.login}
-                        </span>
-                        <Typography className={classes.descr} variant="body2" color="textSecondary" component="p">
-                            {props.descr}
-                        </Typography>
-                    </CardContent>
-                </CardActionArea>
-            </Link>
-        </Card>
+      <Card className={classes.root}>
+          <Link to={`/article/${props.id}`} className={classes.link} onClick={() => dispatch(setLoad(true))}>
+              <CardActionArea>
+                  <CardMedia
+                      className={classes.media}
+                      image={img}
+                  />
+                  <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                          {props.name}
+                      </Typography>
+                      <span className={classes.author}>
+                          Author: {props.author.login}
+                      </span>
+                      <Typography className={classes.descr} variant="body2" color="textSecondary" component="p">
+                          {props.descr}
+                      </Typography>
+                  </CardContent>
+              </CardActionArea>
+          </Link>
+      </Card>
     )
 }
 

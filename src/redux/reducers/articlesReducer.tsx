@@ -73,7 +73,7 @@ const allActionCreators = {
     setComments:(comments:Array<CommentsType>) => ({type:SETCOMMENT, comments} as const),
     editArticle:(payload:ArticleEdit) => ({type:EDITARTICLE, payload} as const),
     setLoad:(prop:boolean) => ({type:SETLOAD, prop} as const),
-    setDark:() => ({type:SETDARK} as const),
+    setDark:(prop:boolean) => ({type:SETDARK} as const),
 }
 
 export const setDarkMode = allActionCreators.setDark
@@ -84,6 +84,7 @@ export const setLoad = allActionCreators.setLoad
 
 export const getArticles = (id=''):ArticlesThunk => async (dispatch) => {
     const data = await articlesAPI.getArticles()
+
     dispatch(allActionCreators.setArticles(data.articles))
 }
 

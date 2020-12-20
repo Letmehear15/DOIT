@@ -2,19 +2,22 @@ import { FormAction, stopSubmit } from "redux-form";
 import { getUserAuth } from "../../api/serviceApi";
 import { Auth } from "../../types/Auth";
 import { ActionThunkType, AllActions } from "../reduxStore";
+import { setDarkMode } from "./articlesReducer";
 
 const SETAUTH = 'SETAUTH'
 const SETLOGOUT = 'SETLOGOUT'
+const SETINIT = 'SETINIT'
 
 const initialState = {
     authorId: null as string | null,
     login: null as null | string,
     password: null as null | string,
+    isInit: false,
     isAuth: false,
     role: '' ,
     isAuthor: false,
-    isReader: false,
     isEditor: false,
+    isDark: false
 }
 
 export const authReducer = (state=initialState, action:ActionsAuth):StateAuth => {
@@ -25,8 +28,13 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
                 ...action.payLoad,
                 authorId: action.payLoad.authorId,
                 isAuthor: action.payLoad.isAuthor,
-                isReader: action.payLoad.isReader,
                 isEditor: action.payLoad.isEditor,
+            }
+        }
+        case SETINIT: {
+            return {
+                ...state,
+                isInit: true
             }
         }
         case SETLOGOUT: {
@@ -37,7 +45,6 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
                 isAuth:false,
                 role:'',
                 isAuthor: false,
-                isReader: false,
                 isEditor: false,
             }
         }
@@ -52,13 +59,21 @@ const allActionCreaters = {
     setLogOut:() => {
         localStorage.removeItem('id')
         return {type:'SETLOGOUT'} as const
-    }
+    },
+    setInit: () => ({type:SETINIT} as const)
 }
 
 export const logOut = allActionCreaters.setLogOut;
 /////////
 //THUNK//
 /////////
+
+export const initialization = ():AuthThunkType => async dispatch => {
+    let promise = dispatch(getInit())
+    promise.then(() => dispatch(allActionCreaters.setInit()))
+    if(localStorage.getItem('dark')) dispatch(setDarkMode(true))
+}
+
 export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
     const data =  await getUserAuth.getAuth(value)
     
@@ -72,7 +87,6 @@ export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
             password:value.password,
             role: data.role,
             isAuthor: data.isAuthor,
-            isReader: data.isReader,
             isEditor: data.isEditor,
             authorId
         }))
@@ -86,7 +100,7 @@ export const getInit = ():AuthThunkType => async dispatch => {
     const password = localStorage.getItem('password')
     
     if(password&&login) {
-        dispatch(getAuth({login,password}))
+        return dispatch(getAuth({login,password}))
     }
 }
 
@@ -99,7 +113,6 @@ type PayLoad = {
     role:string
     isAuth: boolean
     isAuthor: boolean,
-    isReader: boolean,
     isEditor: boolean,
     authorId: string | null
 }

@@ -29,15 +29,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Header({ title, login, logOut, isAbout }) {
+function Header({ title, login, logOut, isAbout, isAuthor, isEditor }) {
   const classes = useStyles();
-
+  const permition = isAuthor||isEditor
   const onExit = () => {
     localStorage.removeItem('login')
     localStorage.removeItem('password')
     logOut()
   }
-
   return (
     <React.Fragment>
       <Toolbar className={classes.toolbar}>
@@ -73,35 +72,42 @@ function Header({ title, login, logOut, isAbout }) {
           </>
         }
       </Toolbar>
-      {isAbout?<Toolbar component="nav" variant="dense" className={classes.toolbarSecondary}>
-          <Link
-            color="inherit"
-            variant="body2"
-            to='/about'
-            className={classes.toolbarLink}
-          >
-            About us
-          </Link>
-      </Toolbar>
-      :
-        <Toolbar component="nav" variant="dense" style={{justifyContent:'flex-start'}}>
-          <Link
-            color="inherit"
-            variant="body2"
-            to='/home'
-            className={classes.toolbarLink}
-          >
-            <ArrowBackIosIcon/>
-          </Link>
-        </Toolbar>
+      {isAbout
+        ?
+          <Toolbar component="nav" variant="dense" className={classes.toolbarSecondary}>
+            <CustomLink title='About us' path='/about' classes={classes}/>
+            {permition&&<CustomLink title='Admin panel' path='/reader' classes={classes}/>}
+          </Toolbar>
+        :
+          <Toolbar component="nav" variant="dense" style={{justifyContent:'flex-start'}}>
+            <CustomLink path='/home' classes={classes}>
+              <ArrowBackIosIcon/>
+            </CustomLink>
+          </Toolbar>
       }
     </React.Fragment>
   );
 }
 
+const CustomLink = ({title='', path, classes, children}) => {
+  return (
+        <Link
+          color="inherit"
+          variant="body2"
+          to={path}
+          className={classes.toolbarLink}
+        >
+          {title}
+          {children}
+        </Link>
+  )
+}
+
 const mapState = (state) => {
   return {
     login: state.auth.login,
+    isAuthor: state.auth.isAuthor,
+    isEditor: state.auth.isEditor,
   }
 }
 

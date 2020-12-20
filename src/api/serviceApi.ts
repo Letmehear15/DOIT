@@ -3,7 +3,7 @@ import { ArticleEdit, Articles, SaveNewArticle } from '../types/Articles';
 import { Auth, Register } from '../types/Auth';
 import { CommentsType } from '../types/Comments';
 
-const baseURL = 'https://alpha.kts.vspj.cz/~reshetov/DOIT'
+const baseURL = 'http://backend.doit.kamisuel.cyou'
 
 type API<T> = {
     articles: Array<T>

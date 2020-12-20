@@ -61,10 +61,10 @@ export default function MainFeaturedPost() {
         <Grid item md={6}>
           <div className={classes.mainFeaturedPostContent}>
             <Typography component="h1" variant="h3" color="inherit" gutterBottom>
-              {mainFeaturedPost.title}
+              {mainFeaturedPostarticle?.title}
             </Typography>
             <Typography variant="h5" color="inherit" paragraph>
-              {mainFeaturedPost.description}
+              {mainFeaturedPostarticle?.descr}
             </Typography>
             <Link variant="subtitle1" href="#">
               {"post.linkText"}

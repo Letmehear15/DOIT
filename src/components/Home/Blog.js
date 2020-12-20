@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent:'center'
   }
 }));
+
 const featuredPosts = [
   { 
     id: 1,
@@ -128,14 +129,20 @@ const sidebar = {
   ],
 };
 
-function Home(props) {
+function Home({isDark, setDarkMode}) {
   const classes = useStyles();
+
+  const darkModeToLocal = () => {
+    setDarkMode(true)
+    if(!isDark) localStorage.setItem('dark', true)
+    else localStorage.removeItem('dark')
+  }
 
   return (
     <React.Fragment>
       <FormControlLabel
         className={classes.mode}
-        control={<IOSSwitch checked={props.isDark} onChange={props.setDarkMode} name="checkedB" />}
+        control={<IOSSwitch checked={isDark} onChange={darkModeToLocal} name="checkedB" />}
         label="Change color mode"
       />
       <CssBaseline />
@@ -157,7 +164,7 @@ function Home(props) {
 
 const mapState = (state) => {
   return {
-    isDark: state.articles.isDark
+    isDark: state.articles.isDark,
   }
 }
 

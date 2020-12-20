@@ -1,16 +1,25 @@
 import React from 'react';
-import c from './validInfo.module.css';
 import { WrappedFieldInputProps, WrappedFieldMetaProps } from 'redux-form';
+import { TextField } from '@material-ui/core';
 
 type CommonProps = {
     input: WrappedFieldInputProps
     type: string
     placeholder: string
-    meta: WrappedFieldMetaProps
+    meta: WrappedFieldMetaProps,
+    name: string
 }
 
-export const ValidatorInput = ({input, type, placeholder,meta}:CommonProps) => {
-    const { touched, error, active } = meta;
-    const isError = touched && error && !active;
-    return <input className={`${c.input} ${isError?c.error:''} ${active?c.active:''}`} {...input} type={type} placeholder={placeholder}/>
+export const ValidatorInput = ({input, type, placeholder, meta, name}:CommonProps) => {
+    return <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id={placeholder}
+                label={placeholder}
+                autoFocus
+                type={type}
+                {...input}
+            />
 }

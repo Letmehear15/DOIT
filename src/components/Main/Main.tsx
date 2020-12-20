@@ -4,7 +4,7 @@ import Cards from '../Cards/Cards'
 import { Articles, SaveNewArticle } from '../../types/Articles';
 import AddIcon from '@material-ui/icons/Add';
 import { makeStyles } from '@material-ui/core/styles';
-import { Fab, Tooltip } from '@material-ui/core';
+import { CssBaseline, Fab, Tooltip } from '@material-ui/core';
 import { ModalWindow } from '../Modal/Modal';
 
 
@@ -31,7 +31,7 @@ export const data = [
   }
 ]
 
-const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId, postArticle}:ownProps) => {  
+const Reader = ({login, role, articles, isEditor, isAuthor, authorId, postArticle}:ownProps) => {  
   const classes = useStyles()
 
   const [open, setOpen] = useState(false);
@@ -47,10 +47,10 @@ const Reader = ({login, role, articles, isEditor, isAuthor, isReader, authorId, 
   
   return (
     <div>
+      <CssBaseline />
       <Menu login={login} role={role}/>
       <div>
         {articles.map(mag => {
-
           return <div className='container' key={mag.id}>
             <Cards
               descr={mag.descr}
@@ -89,7 +89,6 @@ type ownProps = {
   role: string| null
   articles: Array<Articles>
   isAuthor: boolean,
-  isReader: boolean,
   isEditor: boolean,
   authorId: string | null
   postArticle: (value:SaveNewArticle) => void
