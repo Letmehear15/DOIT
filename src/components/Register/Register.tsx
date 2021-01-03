@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Field, reduxForm, InjectedFormProps, formValueSelector, WrappedFieldInputProps } from 'redux-form'
 import { ValidatorInput } from '../VaidatorInfo/ValidatorInfo';
-import c from '../Login/login.module.css';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
 import {toRegister} from '../../redux/reducers/registerReducer'
@@ -92,8 +91,7 @@ const SelectForm:FC<SelectProps> = ({input, label}) => {
         >
         <MenuItem value=''></MenuItem>
         <MenuItem value='author'>Author</MenuItem>
-        <MenuItem value='editor'>Editor</MenuItem>
-        <MenuItem value='reviewer'>Reviewer</MenuItem>
+
         </Select>
     </FormControl>
  )

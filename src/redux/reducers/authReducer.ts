@@ -76,7 +76,7 @@ export const initialization = ():AuthThunkType => async dispatch => {
 
 export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
     const data =  await getUserAuth.getAuth(value)
-    
+    debugger
     if(data.isAuth) {
         localStorage.setItem('login', `${value.login}`);
         localStorage.setItem('password', `${value.password}`);

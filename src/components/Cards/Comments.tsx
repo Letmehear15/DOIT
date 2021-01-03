@@ -30,7 +30,7 @@ const useStyles = makeStyles({
     },
     icon: {
         position: 'absolute',
-        right: '10px',
+        right: '50px',
         top: '50%',
         transform:'translateY(-50%)'
     },

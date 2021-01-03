@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
@@ -9,13 +9,14 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import Header from './Header';
 import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
-import {setDarkMode} from '../../redux/reducers/articlesReducer'
+import {getArticles, setDarkMode} from '../../redux/reducers/articlesReducer'
 import Footer from './Footer';
 import post1 from './blog-post.1.md';
 import post2 from './blog-post.2.md';
 import post3 from './blog-post.3.md';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { FormControlLabel, Switch } from '@material-ui/core';
+import Sidebar from './Sidebar';
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -82,26 +83,26 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const featuredPosts = [
-  { 
-    id: 1,
-    title: 'Featured post',
-    date: 'Nov 12',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
-    imageText: 'Image Text',
-  },
-  {
-    id: 2,
-    title: 'Post title',
-    date: 'Nov 11',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
-    imageText: 'Image Text',
-  },
-];
+// const featuredPosts = [
+//   { 
+//     id: 1,
+//     title: 'Featured post',
+//     date: 'Nov 12',
+//     description:
+//       'This is a wider card with supporting text below as a natural lead-in to additional content.',
+//     image: 'https://source.unsplash.com/random',
+//     imageText: 'Image Text',
+//   },
+//   {
+//     id: 2,
+//     title: 'Post title',
+//     date: 'Nov 11',
+//     description:
+//       'This is a wider card with supporting text below as a natural lead-in to additional content.',
+//     image: 'https://source.unsplash.com/random',
+//     imageText: 'Image Text',
+//   },
+// ];
 
 const posts = [post1, post2, post3];
 
@@ -131,12 +132,19 @@ const sidebar = {
 
 function Home({isDark, setDarkMode}) {
   const classes = useStyles();
+  const dispatch = useDispatch()
+
+  const featuredPosts = useSelector(state => state.articles.articles)
 
   const darkModeToLocal = () => {
     setDarkMode(true)
     if(!isDark) localStorage.setItem('dark', true)
     else localStorage.removeItem('dark')
   }
+
+  useEffect(() => {
+    dispatch(getArticles())
+  },[])
 
   return (
     <React.Fragment>
@@ -154,6 +162,13 @@ function Home({isDark, setDarkMode}) {
             {featuredPosts.map((post) => (
               <FeaturedPost key={post.id} post={post} />
             ))}
+          </Grid>
+          <Grid container spacing={5} className={classes.mainGrid}>
+            <Sidebar
+              title={sidebar.title}
+              description={sidebar.description}
+              archives={sidebar.archives}
+            />
           </Grid>
         </main>
       </Container>

@@ -4,14 +4,15 @@ import { RootState } from '../../redux/reduxStore'
 import Menu from '../Menu/Menu'
 import { Button, CardContent, Paper, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import img from '../../assets/img.jpg'
 import { Link, Redirect, useParams } from 'react-router-dom'
 import {getFullArticle,deleteArticle, editArticle} from '../../redux/reducers/articlesReducer'
 import { Articles } from '../../types/Articles'
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Comments from '../Cards/Comments'
+import Comments from '../Cards/Comments';
+import SaveIcon from '@material-ui/icons/Save';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles({
     paper: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
     img: {
         width: '1200px',
         height: '200px',
-        backgroundImage:`url(${img})`,
+        backgroundImage:`url(https://source.unsplash.com/random)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center'
     },
@@ -72,7 +73,7 @@ const useStyles = makeStyles({
 })
   
 
-const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article, deleteArticle, isLoad, isEditor}) => {
+const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article, deleteArticle, isLoad, isEditor, isDelete}) => {
 
     const  { id }:id  = useParams()
     const classes = useStyles()
@@ -88,20 +89,30 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
         setTitle(article.title)
         setDescr(article.descr)
     },[article.title, article.descr])
+    
+    if(isLoad) {
+        return (
+            <div style={{minHeight: '100vh'}}>
+                <CircularProgress/>
+            </div>
+        )
+    }
 
-    if(isLoad) return <CircularProgress/>
-
-    const onEdit = () => {
-        setEdit(!edit)
-        if(edit) {
-            dispatch(editArticle({id, title, descr}))
-        }
+    if(isDelete) {
+        return (
+            <Redirect to='/home'/>      
+        )
+    }
+    
+    const onSave = () => {
+        setEdit(false)
+        dispatch(editArticle({id, title, descr}))
     }
     
     const onDelete = () => {
         deleteArticle(id)
-        return <Redirect to='/reader'/>
     }
+
 
     const currentAuthor = login === article.author.login
 
@@ -116,7 +127,7 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                         {
                             !edit ?
                             <Typography gutterBottom variant="h5" component="h2">
-                                {article.title}
+                                {title}
                             </Typography>
                             :
                             <TextField 
@@ -131,7 +142,7 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                         {
                             !edit ? 
                             <Typography className={classes.descr} variant="body2" color="textSecondary" component="p">
-                                {article.descr}
+                                {descr}
                             </Typography>
                             :
                             <TextField
@@ -149,8 +160,18 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                     {
                         (currentAuthor||isEditor)&&
                         <div className={classes.helpIcon}>
-                            <DeleteIcon onClick={onDelete} className={classes.deleteIcon} color="secondary" style={{cursor:'pointer'}}/>
-                            <EditIcon onClick={ onEdit } color="primary" style={{cursor:'pointer'}}/>
+                            {edit 
+                                ?   
+                                    <>
+                                        <SaveIcon style={{marginRight: '20px', cursor:'pointer'}} onClick={ onSave }/>
+                                        <CancelIcon style={{cursor:'pointer'}} onClick={() => setEdit(false)}/>
+                                    </>
+                                : 
+                                    <>
+                                        <DeleteIcon onClick={onDelete} className={classes.deleteIcon} color="secondary" style={{cursor:'pointer'}}/>
+                                        <EditIcon onClick={ () => setEdit(true) }  color="primary" style={{cursor:'pointer', marginRight:'10px'}}/>
+                                    </>
+                            }
                         </div>
                     }
                 </div>
@@ -158,7 +179,7 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                     <Comments id={id} login={login}/>
                 </div>
             </Paper>
-            <Link className={classes.link} to='/reader'>
+            <Link className={classes.link} to='/home'>
                 <Button variant="contained" color="primary" className={classes.btn}>
                     Back
                 </Button>
@@ -173,7 +194,8 @@ const mapState = (state:RootState):MapState => {
         login: state.auth.login,
         article: state.articles.fullArticle,
         isLoad: state.articles.isLoad,
-        isEditor: state.auth.isEditor
+        isEditor: state.auth.isEditor,
+        isDelete: state.articles.isDelete
     }
 }
 
@@ -187,6 +209,7 @@ type MapState = {
     article: Articles
     isLoad: boolean
     isEditor: boolean
+    isDelete: boolean
 }
 
 type MapDispatch = {

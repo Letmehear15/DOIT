@@ -6,7 +6,7 @@ import Main from './Main'
 import {getArticles,postArticle} from '../../redux/reducers/articlesReducer'
 import { Redirect } from 'react-router-dom'
 
-const ReaderContainer:FC<commonProps> = ({isAuth, role, login, articles, isEditor, isAuthor, getArticles, postArticle, authorId}) => {
+const ReaderContainer:FC<commonProps> = ({isAuth, role, login, articles, isAuthor, getArticles, postArticle, authorId}) => {
 
     useEffect(() => {
         getArticles()
@@ -20,7 +20,6 @@ const ReaderContainer:FC<commonProps> = ({isAuth, role, login, articles, isEdito
                 articles = {articles} 
                 role={role} 
                 login={login}
-                isEditor={isEditor}
                 isAuthor={isAuthor}
                 authorId={authorId}
                 postArticle={postArticle}
@@ -35,7 +34,6 @@ const mapStateToProps = (state:RootState):mapState => {
         login: state.auth.login,
         articles: state.articles.articles,
         isAuthor: state.auth.isAuthor,
-        isEditor: state.auth.isEditor,
         authorId: state.auth.authorId,
         isAuth: state.auth.isAuth
     }
@@ -48,7 +46,6 @@ type mapState = {
     login: string|null
     articles: Array<Articles>
     isAuthor: boolean,
-    isEditor: boolean,
     authorId: string | null
     isAuth: boolean
 }

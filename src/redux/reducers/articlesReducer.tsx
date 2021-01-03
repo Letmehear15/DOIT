@@ -10,6 +10,7 @@ const SETDARK = 'SETDARK';
 const SETCOMMENT = 'SETCOMMENT';
 const EDITARTICLE = 'EDITARTICLE';
 const SETLOAD = 'SETLOAD';
+const SETDELETE = 'SETDELETE';
 
 
 const initialState = {
@@ -17,7 +18,8 @@ const initialState = {
     fullArticle: {} as Articles,
     comments: [] as Array<CommentsType>,
     isDark: false,
-    isLoad: true
+    isLoad: true,
+    isDelete: false
 }
 
 export const articlesReducer = (state = initialState, action:ArticlesAction):StateArticles => {
@@ -61,6 +63,12 @@ export const articlesReducer = (state = initialState, action:ArticlesAction):Sta
                 isDark: !state.isDark
             }
         }
+        case SETDELETE: {
+            return {
+                ...state, 
+                isDelete: action.prop
+            }
+        }
         default: 
             return state
     }
@@ -74,6 +82,7 @@ const allActionCreators = {
     editArticle:(payload:ArticleEdit) => ({type:EDITARTICLE, payload} as const),
     setLoad:(prop:boolean) => ({type:SETLOAD, prop} as const),
     setDark:(prop:boolean) => ({type:SETDARK} as const),
+    setDelete: (prop: boolean) => ({type: SETDELETE, prop} as const)
 }
 
 export const setDarkMode = allActionCreators.setDark
@@ -83,6 +92,7 @@ export const setLoad = allActionCreators.setLoad
 /////////
 
 export const getArticles = (id=''):ArticlesThunk => async (dispatch) => {
+    dispatch(allActionCreators.setDelete(false))
     const data = await articlesAPI.getArticles()
 
     dispatch(allActionCreators.setArticles(data.articles))
@@ -102,6 +112,7 @@ export const postArticle = (value:SaveNewArticle):ArticlesThunk => async dispatc
 export const deleteArticle = (id:string):ArticlesThunk => async dispatch => {
     await articlesAPI.deleteArticle(id)
     dispatch(getArticles())
+    dispatch(allActionCreators.setDelete(true))
 }
 export const postComments = (id: string|number, autor:string|null, text:string):ArticlesThunk => async dispatch => {
     await articlesAPI.postComment(id, autor, text)
@@ -111,11 +122,10 @@ export const editArticle = (payload: ArticleEdit):ArticlesThunk => async dispatc
     dispatch(allActionCreators.setLoad(true))
     const data = await articlesAPI.editArticle(payload)
     dispatch(allActionCreators.setLoad(false))
-    debugger
-    return 
 }
 
 export const getFullArticle = (id=''):ArticlesThunk => async (dispatch) => {
+    dispatch(allActionCreators.setLoad(true))
     const data = await articlesAPI.getFullArticle(id);
     dispatch(allActionCreators.setFullArticle({
         title: data.title,

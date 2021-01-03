@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
+import { Link } from 'react-router-dom';
 import image from '../../assets/img.jpg'
 import { useDispatch, useSelector } from 'react-redux';
 import { getArticles } from '../../redux/reducers/articlesReducer';
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
+    paddingBottom:'30px'
   },
   overlay: {
     position: 'absolute',
@@ -35,25 +36,32 @@ const useStyles = makeStyles((theme) => ({
       paddingRight: 0,
     },
   },
+  descr: {
+    display: 'block',
+    height: '300px',
+    overflow:'hidden',
+  },
+  link: {
+    marginTop: '20px',
+    textDecoration: 'none',
+    color: theme.palette.primary.main,
+    fontSize:'20px',
+    cursor: 'pointer'
+  }
 }));
-
-const mainFeaturedPost = {
-  title: 'Title of a longer featured blog post',
-  description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-  image: 'https://source.unsplash.com/random',
-  imgText: 'main image description',
-  linkText: 'Continue reading…',
-};
 
 export default function MainFeaturedPost() {
   const classes = useStyles();
   const dispatch = useDispatch()
   const mainFeaturedPostarticle = useSelector(state => state.articles.articles[0])
 
+  const id = mainFeaturedPostarticle?mainFeaturedPostarticle.id:null
+
   useEffect(() => {
     dispatch(getArticles())
   }, [])
+
+
   return (
     <Paper className={classes.mainFeaturedPost} style={{ backgroundImage: `url(${image})` }}>
       <div className={classes.overlay} />
@@ -63,11 +71,11 @@ export default function MainFeaturedPost() {
             <Typography component="h1" variant="h3" color="inherit" gutterBottom>
               {mainFeaturedPostarticle?.title}
             </Typography>
-            <Typography variant="h5" color="inherit" paragraph>
+            <Typography className={classes.descr} variant="h5" color="inherit" paragraph>
               {mainFeaturedPostarticle?.descr}
             </Typography>
-            <Link variant="subtitle1" href="#">
-              {"post.linkText"}
+            <Link className={classes.link} to={`/article/${id}`}>
+              Read more
             </Link>
           </div>
         </Grid>

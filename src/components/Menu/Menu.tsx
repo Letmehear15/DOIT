@@ -30,28 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
 const Menu = (props:CommonProps) => {
   const classes = useStyles();
 
-  const onExit = () => {
-    props.logOut()
-  }
-
-  const clearLocal = () => {
-    localStorage.removeItem('login')
-    localStorage.removeItem('password')
-  }
-
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar className={classes.nav}>
           <div className={classes.login}>
-            {props.login} ({props.role})
+            {props.login}
           </div>
           <div>
             <Link to="/home" className={classes.link}>
-              <Button onClick={clearLocal} color="inherit">Back to home page</Button>
-            </Link>
-            <Link to="/home" onClick={onExit} className={classes.link}>
-              <Button onClick={clearLocal} color="inherit">Exit</Button>
+              <Button color="inherit">Back to home page</Button>
             </Link>
           </div>
         </Toolbar>

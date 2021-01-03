@@ -30,7 +30,7 @@ export const articlesAPI = {
         return axios.get(`${baseURL}/article/${id}`).then(res=>res.data)
     },
     deleteArticle(id:string) {
-        return axios.post(`${baseURL}/articles`, {id})
+        return axios.delete(`${baseURL}/article/${id}`)
     },
     postComment(id: string|number, autor:string|null, text:string) {
         return axios.post(`${baseURL}/article/${id}/comment/new`, {id, text, autor}).then(res=>res.data)

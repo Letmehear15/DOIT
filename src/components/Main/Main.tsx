@@ -31,7 +31,7 @@ export const data = [
   }
 ]
 
-const Reader = ({login, role, articles, isEditor, isAuthor, authorId, postArticle}:ownProps) => {  
+const Reader = ({login, role, articles, isAuthor, authorId, postArticle}:ownProps) => {  
   const classes = useStyles()
 
   const [open, setOpen] = useState(false);
@@ -89,7 +89,6 @@ type ownProps = {
   role: string| null
   articles: Array<Articles>
   isAuthor: boolean,
-  isEditor: boolean,
   authorId: string | null
   postArticle: (value:SaveNewArticle) => void
 }

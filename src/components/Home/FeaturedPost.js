@@ -8,10 +8,21 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Hidden from '@material-ui/core/Hidden';
+import { Link } from 'react-router-dom';
+import image from '../../assets/img.jpg'
+import { Paper } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   card: {
     display: 'flex',
+    position: 'relative',
+    backgroundColor: theme.palette.grey[800],
+    color: theme.palette.common.white,
+    marginBottom: theme.spacing(4),
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    paddingBottom:'30px',
   },
   cardDetails: {
     flex: 1,
@@ -19,7 +30,19 @@ const useStyles = makeStyles({
   cardMedia: {
     width: 160,
   },
-});
+  link: {
+    marginTop: '20px',
+    textDecoration: 'none',
+    color: theme.palette.primary.main,
+    fontSize:'20px',
+    cursor: 'pointer'
+  },
+  descr: {
+    display: 'block',
+    height: '200px',
+    overflow:'hidden',
+  }
+}));
 
 export default function FeaturedPost(props) {
   const classes = useStyles();
@@ -27,29 +50,21 @@ export default function FeaturedPost(props) {
 
   return (
     <Grid item xs={12} md={6}>
-      <CardActionArea component="a" href="#">
-        <Card className={classes.card}>
+        <Card className={classes.card} style={{ backgroundImage: `url(https://source.unsplash.com/random)` }}>
           <div className={classes.cardDetails}>
             <CardContent>
               <Typography component="h2" variant="h5">
                 {post.title}
               </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {post.date}
+              <Typography variant="subtitle1" paragraph className={classes.descr} >
+                {post.descr}
               </Typography>
-              <Typography variant="subtitle1" paragraph>
-                {post.description}
-              </Typography>
-              <Typography variant="subtitle1" color="primary">
-                Continue reading...
-              </Typography>
+              <Link className={classes.link} to={`/article/${post.id}`}>
+                Read more
+              </Link>
             </CardContent>
           </div>
-          <Hidden xsDown>
-            <CardMedia className={classes.cardMedia} image={post.image} title={post.imageTitle} />
-          </Hidden>
         </Card>
-      </CardActionArea>
     </Grid>
   );
 }
