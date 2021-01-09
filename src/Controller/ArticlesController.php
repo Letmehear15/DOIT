@@ -215,7 +215,7 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/article/{id}/stage/{stage}", name="ChangeStageArticle", methods={"PATCH"})
+     * @Route("/article/{id}/stage/{stage}", name="ChangeStageArticle", methods={"PUT"})
      * @param int $stage
      * @param int $id
      * @return JsonResponse
@@ -246,7 +246,7 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/article/{id}/status/{status}", name="ChangeStatusArticle", methods={"PATCH"})
+     * @Route("/article/{id}/status/{status}", name="ChangeStatusArticle", methods={"PUT"})
      * @param int $stage
      * @param int $id
      * @return JsonResponse

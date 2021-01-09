@@ -2,20 +2,32 @@
 
 namespace App\Controller;
 
+use App\Entity\Journal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class JournalController extends AbstractController
 {
     /**
-     * @Route("/journal", name="journal")
+     * @Route("/journals", name="Journals", methods={"GET"})
+     * @return JsonResponse
      */
-    public function index(): Response
+    public function Journals(): Response
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/JournalController.php',
-        ]);
+        $journals = $this->getDoctrine()->getRepository(Journal::class)->findAll();
+
+        $i = 0;
+
+        foreach ($journals as $j) {
+            $journalsAll[$i] = $j->jsonSerialize();
+            $i++;
+        }
+
+
+        $response = new JsonResponse();
+
+        return $response;
     }
 }
