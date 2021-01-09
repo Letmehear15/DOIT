@@ -30,10 +30,11 @@ class ArticlesController extends AbstractController
         $article = $articles->findOneBy([
             'id' => $id
         ]);
-		
+
+
 
         if($article){
-            $response->setData($article->jsonSerialize());
+            $response->setData(array($article->jsonSerialize()));
         }
 
 
@@ -41,22 +42,31 @@ class ArticlesController extends AbstractController
         return $response;
     }
     /**
-     * @Route("/articles", name="articleDelete", methods={"DELETE"})
-     * @param Request $request
+     * @Route("/article/{id}", name="articleDelete", methods={"DELETE"})
+     * @param int $id
      * @return JsonResponse
      */
-    public function articleDelete(Request $request){
+    public function articleDelete(int $id){
         //TODO delete comments
         $entityManager = $this->getDoctrine()->getManager();
         $response = new JsonResponse();
-        $data = json_decode($request->getContent(), true);
+
 
         $articles = $this->getDoctrine()->getRepository(Articles::class);
-        $request->request->replace($data);
         $article = $articles->findOneBy([
-            'id' => $request->get('id')
+            'id' => $id
         ]);
+        $comments = $this->getDoctrine()->getRepository(Comments::class)->findBy([
+            'article' => $id
+        ]);
+
         if($article){
+                $i = 0;
+                while (isset($comments[$i])) {
+                    $entityManager->remove($comments[$i]);
+                    $i++;
+                }
+
             $entityManager->remove($article);
             $entityManager->flush();
             $response->setData(['isDelete' => true]);
@@ -122,13 +132,11 @@ class ArticlesController extends AbstractController
      */
     public function articles()  //was request
     {
-        /*$data = json_decode($request->getContent(), true);
-        $request->request->replace($data);*/
-        //$articles = $this->getDoctrine()->getRepository(Articles::class)->findAll();
-        $articlesRep = $this->getDoctrine()->getRepository(Articles::class)->findAll();
-        $i = 0;
-        $articles = array();
-        foreach ($articlesRep as $a) {
+        $articles = $this->getDoctrine()->getRepository(Articles::class)->findAll();
+
+        /*$i = 0;
+        $articlesjson = array();
+        foreach ($articles as $a) {
             $comments = $a->getComments();
             $j=0;
             $commentsjson = array();
@@ -141,19 +149,29 @@ class ArticlesController extends AbstractController
                 );
                 $j++;
             }
-			
+
             $article = array(
                 'id'=>$a->getId(),
                 'title'=>$a->getTitle(),
                 'autor'=>$a->getAuthor(),
                 'descr'=>$a->getDescription(),
+                'stage'=>$a->getStage(),
+                'status'=>$a->getStatus(),
                 'comments'=> $commentsjson,
             );
-            $articles[$i] = $article;
+            $articlesjson[$i] = $article;
             $i++;
         }
         $response = new JsonResponse();
-        $response->setData(['articles' => $articles]);
+        $response->setData(['articles' => $articlesjson]);
+*/
+        $i = 0;
+        foreach ($articles as $a) {
+            $articlesAll[$i] = $a->jsonSerialize();
+            $i++;
+        }
+        $response = new JsonResponse();
+        $response->setData(['articles' => $articlesAll]);
 
 
         return $response;
@@ -193,6 +211,67 @@ class ArticlesController extends AbstractController
         }
 
 
+        return $response;
+    }
+
+    /**
+     * @Route("/article/{id}/stage/{stage}", name="ChangeStageArticle", methods={"PATCH"})
+     * @param int $stage
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function changeStage(int $id, int $stage, ValidatorInterface $validator){
+        $response = new JsonResponse();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $article = $this->getDoctrine()->getRepository(Articles::class)->findOneBy([
+            'id' => $id
+        ]);;
+        $article->setStage($stage);
+        $errors = $validator->validate($article);
+        if($article) {
+            if ($errors) {
+                $entityManager->persist($article);
+                $entityManager->flush();
+                $response->setData(['isSave' => true]);
+            } else {
+                $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
+            }
+        }
+        else{
+                $response->setData(['isSave' => false, 'error' => 3]); //err 3 - article - dont exist
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Route("/article/{id}/status/{status}", name="ChangeStatusArticle", methods={"PATCH"})
+     * @param int $stage
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function changeStatus(int $id, bool $status, ValidatorInterface $validator){
+        $response = new JsonResponse();
+        $entityManager = $this->getDoctrine()->getManager();
+        $article = $this->getDoctrine()->getRepository(Articles::class)->findOneBy([
+            'id' => $id
+        ]);;
+
+        $article->setStatus($status);
+        $errors = $validator->validate($article);
+        if($article) {
+            if ($errors) {
+                $entityManager->persist($article);
+                $entityManager->flush();
+                $response->setData(['isSave' => true]);
+            } else {
+                $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
+            }
+        }
+        else{
+            $response->setData(['isSave' => false, 'error' => 3]); //err 3 - article - dont exist
+        }
         return $response;
     }
 }

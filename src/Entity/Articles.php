@@ -39,6 +39,16 @@ class Articles
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $stage;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $status;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -125,18 +135,50 @@ class Articles
      */
     public function jsonSerialize()
     {
-        $i = 0;
-        //dump($this->getComments());
-        foreach ($this->getComments() as $c){
-            $comments[$i] = $c;
-            $i++;
+        $comments = $this->getComments();
+        $j=0;
+        foreach ($comments as $c) {
+
+            $commentsjson[$j] = array(
+                'id' => $c->getId(),
+                'autor' => $c->getAuthor(),
+                'text' => $c->getComment()
+            );
+            $j++;
         }
         return [
             "id" => $this->getId(),
             "title" => $this->getTitle(),
-            "description" => $this->getDescription(),
+            "descr" => $this->getDescription(),
             "author"=> $this->getAuthor(),
-            "comments" => $this->getComments()
+            "comments" => $commentsjson,
+            //"comments" => $this->getComments(),
+            "stage" => $this->getStage(),
+            "status" => $this->getStatus()
         ];
+    }
+
+    public function getStage(): ?string
+    {
+        return $this->stage;
+    }
+
+    public function setStage(string $stage): self
+    {
+        $this->stage = $stage;
+
+        return $this;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(bool $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }
