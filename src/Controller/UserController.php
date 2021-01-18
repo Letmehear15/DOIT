@@ -47,6 +47,12 @@ class UserController extends AbstractController
                 case 'editor':
                     $isRole = 'isEditor';
                     break;
+                case 'reviewer':
+                    $isRole = 'isReviewer';
+                    break;
+                case 'admin':
+                    $isRole = 'isAdmin';
+                    break;
                 case 'test':
                     $isRole = 'isTest';
                     break;

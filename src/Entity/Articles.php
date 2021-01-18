@@ -137,6 +137,7 @@ class Articles
     {
         $comments = $this->getComments();
         $j=0;
+        $commentsjson = array();
         foreach ($comments as $c) {
 
             $commentsjson[$j] = array(

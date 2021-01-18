@@ -34,7 +34,7 @@ class ArticlesController extends AbstractController
 
 
         if($article){
-            $response->setData(array($article->jsonSerialize()));
+            $response->setData($article->jsonSerialize());
         }
 
 
@@ -193,14 +193,17 @@ class ArticlesController extends AbstractController
             'id' => $request->get('autor')
             ]);
         $article = new Articles();
-        $response = new JsonResponse();
+
 //TODO make easier
         $article->setTitle($request->get('title'));
         $article->setDescription($request->get('descr'));
         $article->setAuthor($user);
+        $article->setStage(0);
+        $article->setStatus(false);
 
         $errors = $validator->validate($article);
 
+        $response = new JsonResponse();
         if($errors){
             $entityManager->persist($article);
             $entityManager->flush();

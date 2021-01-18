@@ -78,7 +78,7 @@ class Journal
         return [
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "date" => $this->getDescription()
+            "date" => $this->getDate()->format("Y-m-d")
         ];
     }
 }
