@@ -41,13 +41,13 @@ class ArticlesController extends AbstractController
 
         return $response;
     }
+
     /**
      * @Route("/article/{id}", name="articleDelete", methods={"DELETE"})
      * @param int $id
      * @return JsonResponse
      */
     public function articleDelete(int $id){
-        //TODO delete comments
         $entityManager = $this->getDoctrine()->getManager();
         $response = new JsonResponse();
 
@@ -71,7 +71,8 @@ class ArticlesController extends AbstractController
             $entityManager->flush();
             $response->setData(['isDelete' => true]);
 
-        }        else{
+        }
+        else{
             $response->setData(['isDelete' => false]);
         }
 

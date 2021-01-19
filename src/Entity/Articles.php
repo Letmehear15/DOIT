@@ -49,9 +49,15 @@ class Articles
      */
     private $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Review::class, mappedBy="article")
+     */
+    private $reviews;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -179,6 +185,36 @@ class Articles
     public function setStatus(bool $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Review[]
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): self
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews[] = $review;
+            $review->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): self
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getArticle() === $this) {
+                $review->setArticle(null);
+            }
+        }
 
         return $this;
     }

@@ -62,6 +62,36 @@ class JournalController extends AbstractController
     }
 
     /**
+     * @Route("/journal/{id}", name="journalDelete", methods={"DELETE"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function journalDelete(int $id){
+        $entityManager = $this->getDoctrine()->getManager();
+        $response = new JsonResponse();
+
+
+        $journals = $this->getDoctrine()->getRepository(Journal::class);
+        $journal = $journals->findOneBy([
+            'id' => $id
+        ]);
+
+
+        if($journal){
+
+            $entityManager->remove($journal);
+            $entityManager->flush();
+            $response->setData(['isDelete' => true]);
+
+        }
+        else{
+            $response->setData(['isDelete' => false]);
+        }
+
+        return $response;
+    }
+
+    /**
      * @Route("/journal/new", name="JournalNew", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
