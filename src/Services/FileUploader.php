@@ -17,8 +17,9 @@ class FileUploader
         $this->slugger = $slugger;
     }
 
-    public function upload(UploadedFile $file)
+    public function upload(UploadedFile $file, string $type)
     {
+        $this->setTargetDirectory($this->getTargetDirectory().'/'.$type);
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
         $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
@@ -32,6 +33,13 @@ class FileUploader
         return $fileName;
     }
 
+    /**
+     * @param mixed $targetDirectory
+     */
+    public function setTargetDirectory($targetDirectory): void
+    {
+        $this->targetDirectory = $targetDirectory;
+    }
     public function getTargetDirectory()
     {
         return $this->targetDirectory;

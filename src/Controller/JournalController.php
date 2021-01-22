@@ -211,7 +211,8 @@ class JournalController extends AbstractController
         /*$journal->setJournalFilename(
             new File($this->getParameter('journal_directory').'/'.$journal->getJournalFilename()));*/
         if($journal && $request->files->get('document')){
-                $journal->setDocument($file->getTargetDirectory().'/'.$file->upload($request->files->get('document')));
+                $type = 'journals';
+                $journal->setDocument($file->getTargetDirectory().'/'.$type.'/'.$file->upload($request->files->get('document'), $type));
 
                 $errors = $validator->validate($journal);
                 if ($errors) {

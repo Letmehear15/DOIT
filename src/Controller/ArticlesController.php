@@ -6,7 +6,9 @@ use App\Entity\Comments;
 use App\Entity\Review;
 use App\Entity\User;
 use App\Entity\Articles;
+use App\Services\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -280,6 +282,66 @@ class ArticlesController extends AbstractController
         else{
             $response->setData(['isSave' => false, 'error' => 3]); //err 3 - article - dont exist
         }
+        return $response;
+    }
+
+    /**
+     * @Route("/article/{id}/doc", name="articleUpdateDoc", methods={"POST"})
+     * @param Request $request
+     * @param int $id
+     * @param FileUploader $file
+     * @return JsonResponse
+     */
+    public function articleUpdateDoc(Request $request, ValidatorInterface $validator, int $id, FileUploader $file){
+
+        $response = new JsonResponse();
+        $entityManager = $this->getDoctrine()->getManager();
+        /*$data = json_decode($request->getContent(), true);
+        $request->request->replace($data);*/
+
+
+        $articles = $this->getDoctrine()->getRepository(Articles::class); //TODO articles
+
+        $article = $articles->findOneBy([
+            'id' => $id
+        ]);
+        /*$article->setArticleFilename(
+            new File($this->getParameter('article_directory').'/'.$article->getArticleFilename()));*/
+        if($article && $request->files->get('document')){
+            $type = 'articles';
+            $article->setDocument($file->getTargetDirectory().'/'.$type.'/'.$file->upload($request->files->get('document'), $type));
+
+            $errors = $validator->validate($article);
+            if ($errors) {
+                $entityManager->persist($article);
+                $entityManager->flush();
+                $response->setData(['isSave' => true]);
+            } else {
+                $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
+            }
+
+        }
+        else{
+            $response->setData(['isSave' => false, 'error' => 1]);  //err 1 - user dont exist
+        }
+
+
+        return $response;
+
+    }
+
+    /**
+     * @Route("/article/{id}/doc", name="ArticleDoc", methods={"GET"})
+     * @param int $id
+     * @return BinaryFileResponse
+     */
+    public function ArticleDoc(int $id){
+        $article = $this->getDoctrine()->getRepository(Articles::class)->findOneBy([
+            'id' => $id
+        ]);
+
+        $file = $article->getDocument();
+        $response = new BinaryFileResponse($file);
         return $response;
     }
 }

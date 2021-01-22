@@ -54,6 +54,11 @@ class Articles
      */
     private $reviews;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $document;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -231,6 +236,18 @@ class Articles
                 $review->setArticle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDocument(): ?string
+    {
+        return $this->document;
+    }
+
+    public function setDocument(?string $document): self
+    {
+        $this->document = $document;
 
         return $this;
     }
