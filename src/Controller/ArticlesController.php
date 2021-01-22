@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comments;
+use App\Entity\Review;
 use App\Entity\User;
 use App\Entity\Articles;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,11 +60,18 @@ class ArticlesController extends AbstractController
         $comments = $this->getDoctrine()->getRepository(Comments::class)->findBy([
             'article' => $id
         ]);
-
+        $reviews = $this->getDoctrine()->getRepository(Review::class)->findBy([
+            'article' => $id
+        ]);
         if($article){
                 $i = 0;
                 while (isset($comments[$i])) {
                     $entityManager->remove($comments[$i]);
+                    $i++;
+                }
+                $i=0;
+                while (isset($reviews[$i])){
+                    $entityManager->remove($reviews[$i]);
                     $i++;
                 }
 
@@ -78,6 +86,7 @@ class ArticlesController extends AbstractController
 
         return $response;
     }
+
     /**
      * @Route("/article/{id}/update", name="articleUpdate", methods={"POST"})
      * @param Request $request
@@ -100,9 +109,8 @@ class ArticlesController extends AbstractController
         //TODO trycatch
 
         if($article){
-            if($request->get('title') AND $request->get('descr')) {
-                $article->setTitle($request->get('title'));
-                $article->setDescription($request->get('descr'));
+                if($request->get('title')) $article->setTitle($request->get('title'));
+                if($request->get('descr')) $article->setDescription($request->get('descr'));
                // $article->setAuthor($author);
 
                 $errors = $validator->validate($article);
@@ -113,10 +121,6 @@ class ArticlesController extends AbstractController
                 } else {
                     $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
                 }
-            }
-            else{
-                $response->setData(['isSave' => false, 'error' => 3]); //err 3 - author - dont exist
-            }
         }
         else{
             $response->setData(['isSave' => false, 'error' => 1]);  //err 1 - user dont exist

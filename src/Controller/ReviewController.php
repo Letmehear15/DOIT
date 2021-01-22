@@ -110,10 +110,10 @@ class ReviewController extends AbstractController
 
 
         if($review){
-                $review->setArticle($article);
-                $review->setReviewer($user);
-                $review->setReview($request->get('review'));
-                $review->setEvaluation($request->get('evaluation'));
+                //$review->setArticle($article);
+                if($user) $review->setReviewer($user);
+                if($request->get('review')) $review->setReview($request->get('review'));
+                if($request->get('evaluation')) $review->setEvaluation($request->get('evaluation'));
 
                 $errors = $validator->validate($review);
                 if ($errors) {

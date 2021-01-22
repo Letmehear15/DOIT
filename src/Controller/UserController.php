@@ -108,5 +108,128 @@ class UserController extends AbstractController
         return $response;
     }
 
+    /**
+     * @Route("/users", name="Users", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function Users(){
+        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+
+        $i = 0;
+        foreach ($users as $u) {
+            $usersAll[$i] = $u->jsonSerialize();
+            $i++;
+        }
+        $response = new JsonResponse();
+        $response->setData($usersAll);
+
+
+        return $response;
+    }
+
+    /**
+     * @Route("/user/{id}", name="user", methods={"GET"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function user(int $id){
+        $response = new JsonResponse();
+
+        /* $data = json_decode($request->getContent(), true);
+         $request->request->replace($data);*/
+
+        $users = $this->getDoctrine()->getRepository(User::class);
+        $user = $users->findOneBy([
+            'id' => $id
+        ]);
+
+
+
+        if($user){
+            $response->setData($user->jsonSerialize());
+        }
+
+
+
+        return $response;
+    }
+
+    /**
+     * @Route("/user/{id}", name="userDelete", methods={"DELETE"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function userDelete(int $id){
+        $entityManager = $this->getDoctrine()->getManager();
+        $response = new JsonResponse();
+
+
+        $users = $this->getDoctrine()->getRepository(users::class);
+        $user = $users->findOneBy([
+            'id' => $id
+        ]);
+
+
+        if($user){
+
+            $entityManager->remove($user);
+            $entityManager->flush();
+            $response->setData(['isDelete' => true]);
+
+        }
+        else{
+            $response->setData(['isDelete' => false]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Route("/user/{id}", name="userUpdate", methods={"PUT"})
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function userUpdate(Request $request, ValidatorInterface $validator, int $id){
+        $response = new JsonResponse();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace($data);
+
+        $users = $this->getDoctrine()->getRepository(User::class);
+        $user = $users->findOneBy([
+            'id' => $id
+        ]);
+        /* $author = $users->findOneBy([
+             'id' => $request->get('autor')
+         ]);*/
+
+        if($user){
+            if($request->get('login')) $user->setLogin($request->get('login'));
+            if($request->get('password')) $user->setPassword($request->get('password'));
+            if($request->get('role')) $user->setRole($request->get('role'));
+            if($request->get('name')) $user->setName($request->get('name'));
+            if($request->get('lastname')) $user->setLastname($request->get('lastname'));
+            if($request->get('email')) $user->setEmail($request->get('email'));
+            if($request->get('tel')) $user->setTel($request->get('tel'));
+
+                $errors = $validator->validate($user);
+                if ($errors) {
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+                    $response->setData(['isSave' => true]);
+                } else {
+                    $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
+                }
+        }
+        else{
+            $response->setData(['isSave' => false, 'error' => 1]);  //err 1 - user dont exist
+        }
+
+
+        return $response;
+
+    }
 
 }

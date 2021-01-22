@@ -153,12 +153,28 @@ class Articles
             );
             $j++;
         }
+
+        $j=0;
+        $reviews = $this->getReviews();
+        $review = NULL;
+        foreach ($reviews as $r) {
+            $review[$j] = array(
+                'id' => $r->getId(),
+                'review' => $r->getReview(),
+                'reviewer' => $r->getReviewer(),
+                'evaluation' => $r->getEvaluation()
+            );
+            $j++;
+        }
+
+
         return [
             "id" => $this->getId(),
             "title" => $this->getTitle(),
             "descr" => $this->getDescription(),
             "author"=> $this->getAuthor(),
             "comments" => $commentsjson,
+            "review" => $review,
             //"comments" => $this->getComments(),
             "stage" => $this->getStage(),
             "status" => $this->getStatus()

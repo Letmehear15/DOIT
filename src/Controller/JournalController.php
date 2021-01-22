@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Journal;
 use Doctrine\DBAL\Types\DateTimeType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,6 +59,21 @@ class JournalController extends AbstractController
 
 
 
+        return $response;
+    }
+
+    /**
+     * @Route("/journal/{id}/doc", name="JournalDoc", methods={"GET"})
+     * @param int $id
+     * @return BinaryFileResponse
+     */
+    public function JournalDoc(int $id){
+        $journal = $this->getDoctrine()->getRepository(Journal::class)->findOneBy([
+            'id' => $id
+        ]);
+
+        $file = $journal->getDocument();
+        $response = new BinaryFileResponse($file);
         return $response;
     }
 
@@ -150,14 +166,10 @@ class JournalController extends AbstractController
         ]);
 
         if($journal){
-            if($request->get('name') AND $request->get('date')) {
-                $journal->setName($request->get('name'));
+                if($request->get('name')) $journal->setName($request->get('name'));
                 $date = new \DateTimeImmutable($request->get('date'));
-                $journal->setDate($date);
+                if($date) $journal->setDate($date);
                 //TODO
-                if($request->get('document')){
-                    $journal->setDocument($request->get('document'));
-                }
                 $errors = $validator->validate($journal);
                 if ($errors) {
                     $entityManager->persist($journal);
@@ -166,10 +178,6 @@ class JournalController extends AbstractController
                 } else {
                     $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
                 }
-            }
-            else{
-                $response->setData(['isSave' => false, 'error' => 3]); //err 3 - author - dont exist
-            }
         }
         else{
             $response->setData(['isSave' => false, 'error' => 1]);  //err 1 - user dont exist
@@ -179,4 +187,50 @@ class JournalController extends AbstractController
         return $response;
 
     }
+
+    /**
+     * @Route("/journal/{id}/doc", name="journalUpdateDoc", methods={"POST"})
+     * @param Request $request
+     * @param int $id
+     * @param FileUploader $file
+     * @return JsonResponse
+     */
+    public function journalUpdateDoc(Request $request, ValidatorInterface $validator, int $id, FileUploader $file){
+
+        $response = new JsonResponse();
+        $entityManager = $this->getDoctrine()->getManager();
+        /*$data = json_decode($request->getContent(), true);
+        $request->request->replace($data);*/
+
+
+        $journals = $this->getDoctrine()->getRepository(Journal::class); //TODO articles
+
+        $journal = $journals->findOneBy([
+            'id' => $id
+        ]);
+        /*$journal->setJournalFilename(
+            new File($this->getParameter('journal_directory').'/'.$journal->getJournalFilename()));*/
+        if($journal && $request->files->get('document')){
+                $journal->setDocument($file->getTargetDirectory().'/'.$file->upload($request->files->get('document')));
+
+                $errors = $validator->validate($journal);
+                if ($errors) {
+                    $entityManager->persist($journal);
+                    $entityManager->flush();
+                    $response->setData(['isSave' => true]);
+                } else {
+                    $response->setData(['isSave' => false, 'error' => 2]);//err 2 - wrong dates
+                }
+
+        }
+        else{
+            $response->setData(['isSave' => false, 'error' => 1]);  //err 1 - user dont exist
+        }
+
+
+        return $response;
+
+    }
+
+
 }
