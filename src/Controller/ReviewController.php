@@ -56,6 +56,32 @@ class ReviewController extends AbstractController
     }
 
     /**
+     * @Route("/reviewer/{id}", name="reviewer", methods={"GET"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function reviewer(int $id)
+    {
+        $response = new JsonResponse();
+
+        $reviews = $this->getDoctrine()->getRepository(Review::class)->findBy([
+            'reviewer' => $id
+        ]);
+        $i = 0;
+        if ($reviews) {
+
+        foreach ($reviews as $r) {
+            $reviewsAll[$i] = $r->jsonSerialize();
+            $i++;
+        }
+        $response->setData($reviewsAll);
+        } else{
+            $response->setData(NULL);
+        }
+        return $response;
+    }
+
+    /**
      * @Route("/review/{id}", name="reviewDelete", methods={"DELETE"})
      * @param int $id
      * @return JsonResponse
@@ -157,10 +183,10 @@ class ReviewController extends AbstractController
 
         $review = new Review();
 
-        $review->setArticle($article);
-        $review->setReviewer($user);
-        $review->setReview($request->get('review'));
-        $review->setEvaluation($request->get('evaluation'));
+        if($article) $review->setArticle($article);
+        if($user) $review->setReviewer($user);
+        if($request->get('review')) $review->setReview($request->get('review'));
+        if($request->get('evaluation')) $review->setEvaluation($request->get('evaluation'));
 
 
         $errors = $validator->validate($review);

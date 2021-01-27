@@ -190,10 +190,11 @@ class ArticlesController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function NewArticle(Request $request, ValidatorInterface $validator){
-        $data = json_decode($request->getContent(), true);
-        $request->request->replace($data);
-
+    public function NewArticle(Request $request, ValidatorInterface $validator, FileUploader $file){
+        /*if(!$request->files->get('document')) {
+            $data = json_decode($request->getContent(), true);
+            $request->request->replace($data);
+        }*/
         $entityManager = $this->getDoctrine()->getManager();
         $repos = $this->getDoctrine()->getRepository(User::class);
         $user = $repos->findOneBy([
@@ -207,7 +208,11 @@ class ArticlesController extends AbstractController
         $article->setAuthor($user);
         $article->setStage(0);
         $article->setStatus(false);
-
+        if($request->files->get('document')) {
+            //dump($request);
+            $type = 'articles';
+            $article->setDocument($file->getTargetDirectory() . '/' . $type . '/' . $file->upload($request->files->get('document'), $type));
+        }
         $errors = $validator->validate($article);
 
         $response = new JsonResponse();
@@ -296,9 +301,6 @@ class ArticlesController extends AbstractController
 
         $response = new JsonResponse();
         $entityManager = $this->getDoctrine()->getManager();
-        /*$data = json_decode($request->getContent(), true);
-        $request->request->replace($data);*/
-
 
         $articles = $this->getDoctrine()->getRepository(Articles::class); //TODO articles
 

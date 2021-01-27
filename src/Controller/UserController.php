@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Articles;
+use App\Entity\Review;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
@@ -164,15 +166,29 @@ class UserController extends AbstractController
         $response = new JsonResponse();
 
 
-        $users = $this->getDoctrine()->getRepository(users::class);
+        $users = $this->getDoctrine()->getRepository(User::class);
         $user = $users->findOneBy([
             'id' => $id
         ]);
-
+        $reviews = $this->getDoctrine()->getRepository(Review::class)->findBy([
+            'reviewer' => $id
+        ]);
+        $articles = $this->getDoctrine()->getRepository(Articles::class)->findBy([
+            'author' => $id
+        ]);
 
         if($user){
-
+            foreach($reviews as $r){
+                $r->setReviewer(NULL);
+                $entityManager->persist($r);
+            }
+            foreach ($articles as $a){
+                $a->setAuthor(NULL);
+                $entityManager->persist($a);
+            }
+           $entityManager->flush();
             $entityManager->remove($user);
+
             $entityManager->flush();
             $response->setData(['isDelete' => true]);
 
@@ -201,6 +217,7 @@ class UserController extends AbstractController
         $user = $users->findOneBy([
             'id' => $id
         ]);
+
         /* $author = $users->findOneBy([
              'id' => $request->get('autor')
          ]);*/

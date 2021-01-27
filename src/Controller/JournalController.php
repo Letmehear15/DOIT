@@ -112,27 +112,24 @@ class JournalController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function NewJournal(Request $request, ValidatorInterface $validator, FileUploader $fileUploader){
-        $data = json_decode($request->getContent(), true);
+    public function NewJournal(Request $request, ValidatorInterface $validator, FileUploader $file){
+        /*$data = json_decode($request->getContent(), true);
         $request->request->replace($data);
-
+*/
         $entityManager = $this->getDoctrine()->getManager();
 
         $journal = new Journal();
 
-        $docPDF = $request->files->all();
-
-        if ($docPDF) {
-            $docFileName = $fileUploader->upload($docPDF);
-            $journal->setDocument($docFileName);
-        }
 
 
         $date = new \DateTimeImmutable($request->get('date'));
         $journal->setDate($date);
         $journal->setName($request->get('name'));
 
-
+        if($request->files->get('document')) {
+            $type = 'journals';
+            $journal->setDocument($file->getTargetDirectory() . '/' . $type . '/' . $file->upload($request->files->get('document'), $type));
+        }
         $errors = $validator->validate($journal);
         $response = new JsonResponse();
         if($errors){
