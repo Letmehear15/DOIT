@@ -168,8 +168,8 @@ class ReviewController extends AbstractController
     public function newReview(Request $request, ValidatorInterface $validator){
         $data = json_decode($request->getContent(), true);
         $request->request->replace($data);
-
         $entityManager = $this->getDoctrine()->getManager();
+        $response = new JsonResponse();
 
         $users = $this->getDoctrine()->getRepository(User::class);
         $articles = $this->getDoctrine()->getRepository(Articles::class);
@@ -181,27 +181,34 @@ class ReviewController extends AbstractController
             'id' => $request->get('article')
         ]);
 
-        $review = new Review();
 
-        if($article) $review->setArticle($article);
-        if($user) $review->setReviewer($user);
-        if($request->get('review')) $review->setReview($request->get('review'));
-        if($request->get('evaluation')) $review->setEvaluation($request->get('evaluation'));
+        $review = $this->getDoctrine()->getRepository(Review::class)->findOneBy([
+            'article' => $request->get('article')
+        ]);
+        if($review){
 
+        } else {
 
-        $errors = $validator->validate($review);
+            $review = new Review();
 
-        $response = new JsonResponse();
-        if($errors){
-            $entityManager->persist($review);
-            $entityManager->flush();
-            $response->setData(['isSave' => true]);
         }
-        else{
+        if($article) {
+            $review->setArticle($article);
+            if ($user) $review->setReviewer($user);
+            if ($request->get('review')) $review->setReview($request->get('review'));
+            if ($request->get('evaluation')) $review->setEvaluation($request->get('evaluation'));
+
+            $errors = $validator->validate($review);
+            if ($errors) {
+                $entityManager->persist($review);
+                $entityManager->flush();
+                $response->setData(['isSave' => true]);
+            } else {
+                $response->setData(['isSave' => false]);
+            }
+        } else {
             $response->setData(['isSave' => false]);
         }
-
-
         return $response;
     }
 

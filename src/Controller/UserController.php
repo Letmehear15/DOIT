@@ -82,30 +82,38 @@ class UserController extends AbstractController
     public function Registration(Request $request, ValidatorInterface $validator){
         $data = json_decode($request->getContent(), true);
         $request->request->replace($data);
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $user = new User();
         $response = new JsonResponse();
+        $entityManager = $this->getDoctrine()->getManager();
+        $users = $this->getDoctrine()->getRepository(User::class)->findOneBy([
+            'login' => $request->get('login')
+        ]);
+        if($users){
+            $response->setData([
+                'isSave' => false,
+                'error' => 'login_exist'
+            ]);
+        } else {
+            $user = new User();
+
 //TODO make easier
-        $user->setLogin($request->get('login'));
-        $user->setPassword($request->get('password'));
-        $user->setRole($request->get('role'));
-        $user->setName($request->get('name'));
-        $user->setLastname($request->get('lastname'));
-        $user->setEmail($request->get('email'));
-        $user->setTel($request->get('tel'));
+            $user->setLogin($request->get('login'));
+            $user->setPassword($request->get('password'));
+            $user->setRole($request->get('role'));
+            $user->setName($request->get('name'));
+            $user->setLastname($request->get('lastname'));
+            $user->setEmail($request->get('email'));
+            $user->setTel($request->get('tel'));
 
-        $errors = $validator->validate($user);
+            $errors = $validator->validate($user);
 
-        if($errors){
-            $entityManager->persist($user);
-            $entityManager->flush();
-            $response->setData(['isSave' => true]);
+            if ($errors) {
+                $entityManager->persist($user);
+                $entityManager->flush();
+                $response->setData(['isSave' => true]);
+            } else {
+                $response->setData(['isSave' => false]);
+            }
         }
-        else{
-            $response->setData(['isSave' => false]);
-        }
-
 
         return $response;
     }
