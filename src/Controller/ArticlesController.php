@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comments;
+use App\Entity\Journal;
 use App\Entity\Review;
 use App\Entity\User;
 use App\Entity\Articles;
@@ -114,7 +115,10 @@ class ArticlesController extends AbstractController
                 if($request->get('title')) $article->setTitle($request->get('title'));
                 if($request->get('descr')) $article->setDescription($request->get('descr'));
                // $article->setAuthor($author);
-
+                if($request->get('category')) $article->setCategory($request->get('category'));
+                if($request->get('journal')) $article->setJournal($this->getDoctrine()->getRepository(Journal::class)->findOneBy([
+                'id' => $request->get('journal')
+            ]));
                 $errors = $validator->validate($article);
                 if ($errors) {
                     $entityManager->persist($article);
@@ -195,6 +199,7 @@ class ArticlesController extends AbstractController
             $data = json_decode($request->getContent(), true);
             $request->request->replace($data);
         }*/
+        //dump($request->files->all());
         $entityManager = $this->getDoctrine()->getManager();
         $repos = $this->getDoctrine()->getRepository(User::class);
         $user = $repos->findOneBy([
@@ -202,10 +207,13 @@ class ArticlesController extends AbstractController
             ]);
         $article = new Articles();
 
-//TODO make easier
         $article->setTitle($request->get('title'));
-        $article->setDescription($request->get('descr'));
+        if($request->get('descr')) $article->setDescription($request->get('descr'));
         $article->setAuthor($user);
+        if($request->get('category')) $article->setCategory($request->get('category'));
+        if($request->get('journal')) $article->setJournal($this->getDoctrine()->getRepository(Journal::class)->findOneBy([
+            'id' => $request->get('journal')
+        ]));
         $article->setStage(0);
         $article->setStatus(false);
         if($request->files->get('document')) {

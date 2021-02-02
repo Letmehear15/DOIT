@@ -59,6 +59,16 @@ class Articles
      */
     private $document;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Journal::class, inversedBy="articles")
+     */
+    private $journal;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -171,8 +181,10 @@ class Articles
             );
             $j++;
         }
-
-
+        $journal = NULL;
+        if($this->getJournal()){
+            $journal = $this->getJournal()->jsonSerialize();
+        }
         return [
             "id" => $this->getId(),
             "title" => $this->getTitle(),
@@ -182,7 +194,9 @@ class Articles
             "review" => $review,
             //"comments" => $this->getComments(),
             "stage" => $this->getStage(),
-            "status" => $this->getStatus()
+            "status" => $this->getStatus(),
+            "category" => $this->getCategory(),
+            "journal" => $journal
         ];
     }
 
@@ -248,6 +262,30 @@ class Articles
     public function setDocument(?string $document): self
     {
         $this->document = $document;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getJournal(): ?Journal
+    {
+        return $this->journal;
+    }
+
+    public function setJournal(?Journal $journal): self
+    {
+        $this->journal = $journal;
 
         return $this;
     }

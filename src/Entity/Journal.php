@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\JournalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +33,16 @@ class Journal
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $document;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Articles::class, mappedBy="Journal")
+     */
+    private $articles;
+
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,10 +87,50 @@ class Journal
 
     public function jsonSerialize()
     {
+        $i = 0;
+        $articles = NULL;
+        if($this->getArticles()) {
+            foreach ($this->getArticles() as $a) {
+                $articles[$i] = $a->jsonSerialize();
+                $i++;
+            }
+        }
         return [
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "date" => $this->getDate()->format("Y-m-d")
+            "date" => $this->getDate()->format("Y-m-d"),
+            "articles" => $articles
+
         ];
+    }
+
+    /**
+     * @return Collection|Articles[]
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Articles $article): self
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles[] = $article;
+            $article->setJournal($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Articles $article): self
+    {
+        if ($this->articles->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getJournal() === $this) {
+                $article->setJournal(null);
+            }
+        }
+
+        return $this;
     }
 }

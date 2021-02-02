@@ -19,10 +19,13 @@ class FileUploader
 
     public function upload(UploadedFile $file, string $type)
     {
+        dump($file->getMaxFilesize());
         $this->setTargetDirectory($this->getTargetDirectory().'/'.$type);
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
         $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+
 
         try {
             $file->move($this->getTargetDirectory(), $fileName);
