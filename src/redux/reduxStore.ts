@@ -4,11 +4,15 @@ import { reducer as formReducer } from 'redux-form';
 import { authReducer } from './reducers/authReducer';
 import { articlesReducer } from './reducers/articlesReducer';
 import { registerReducer } from './reducers/registerReducer';
+import { userReducer } from './reducers/usersReducer';
+import { journalReducer } from './reducers/journalReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   articles: articlesReducer,
   register: registerReducer,
+  users: userReducer,
+  journals: journalReducer,
   form: formReducer
 })
 

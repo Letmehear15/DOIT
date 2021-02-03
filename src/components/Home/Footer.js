@@ -32,7 +32,7 @@ export default function Footer(props) {
   return (
     <footer className={classes.footer}>
       <Container maxWidth="lg">
-        <Typography variant="h6" align="center" gutterBottom>
+        <Typography style={{borderBottom: '3px solid red', padding: 3}} variant="h6" align="center" gutterBottom>
           {title}
         </Typography>
         <Typography variant="subtitle1" align="center" color="textSecondary" component="p">

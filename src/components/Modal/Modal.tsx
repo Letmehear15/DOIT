@@ -1,11 +1,13 @@
-import React, { FC, useState } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { SaveNewArticle } from '../../types/Articles';
 import { useTheme } from '@material-ui/core/styles';
-import { Container } from '@material-ui/core';
+import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {TOPICS} from '../../Helps/StageMap'
 
 const useStyles = makeStyles((theme:Theme)=>({
     paper: {
@@ -42,6 +44,16 @@ const useStyles = makeStyles((theme:Theme)=>({
     },
     title: {
         marginBottom: 20
+    },
+    uploadButton: {
+        marginTop: 10,
+        marginLeft: -1,
+        padding: 5,
+        width: 350,
+        backgroundColor: theme.palette.primary.main
+    },
+    formControl: {
+        minWidth: 120,
     }
 }))
 
@@ -50,6 +62,14 @@ export const ModalWindow:FC<OwnProps> = (props) => {
     const theme = useTheme()
     const [title, setTitle] = useState('')
     const [descr, setDescr] = useState('')
+    const [document, setFile] = useState<File>()
+    const [category, setCategory] = useState('')
+
+   const onFileSave = (e:ChangeEvent<HTMLInputElement>) => {
+    if(e.target.files && e.target.files.length) {
+        setFile(e.target.files[0])
+    }
+   }
 
     return (
         <Modal
@@ -76,8 +96,14 @@ export const ModalWindow:FC<OwnProps> = (props) => {
                         value={descr}
                         onChange={(e) => setDescr(e.target.value)}
                     />
+                    <SelectCategory setRole={setCategory} role={category}/>
+                    <FormControlLabel
+                        label="Upload file"
+                        className={classes.uploadButton}
+                        control={<input type="file" onChange={(e) => onFileSave(e)}/>}
+                    />
                     <div className={classes.btns}>
-                        <Button variant="contained" color="primary" disabled={title&&descr?false:true} onClick={() => props.onSave({title, descr})}>Save</Button>
+                        <Button variant="contained" color="primary" disabled={title&&descr&&category?false:true} onClick={() => props.onSave({title, descr, document,category})}>Save</Button>
                         <Button variant="contained" color="secondary" onClick={props.handleModal}>Cancel</Button>
                     </div>
                 </form>
@@ -90,4 +116,26 @@ type OwnProps = {
     open: boolean
     handleModal: () => void
     onSave: (value:SaveNewArticle) => void
+}
+
+
+const SelectCategory = (props:any) => {
+    const classes = useStyles()
+    
+    return (
+        <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Topic</InputLabel>
+            <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                onChange={(event) => props.setRole(event.target.value)}
+                value={props.role}
+            >
+            <MenuItem value={TOPICS.MEDICINE}>{TOPICS.MEDICINE}</MenuItem>
+            <MenuItem value={TOPICS.NAVALNY}>{TOPICS.NAVALNY}</MenuItem>
+            <MenuItem value={TOPICS.PROGRAMMING}>{TOPICS.PROGRAMMING}</MenuItem>
+            <MenuItem value={TOPICS.SCIENCE}>{TOPICS.SCIENCE}</MenuItem>
+            </Select>
+        </FormControl>
+    )
 }

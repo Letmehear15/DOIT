@@ -3,10 +3,12 @@ import { Register } from "../../types/Auth";
 import { ActionThunkType, AllActions } from "../reduxStore";
 
 const SETREGISTER = 'SETREGISTER';
+const SETERROR = 'SETERROR';
 
 
 const initialState = {
-    isOk: false
+    isOk: false,
+    error: false
 }
 
 export const registerReducer = (state = initialState, action:RegisterAction):StateRegister => {
@@ -14,7 +16,14 @@ export const registerReducer = (state = initialState, action:RegisterAction):Sta
         case SETREGISTER: {
             return {
                 ...state,
-                isOk: true
+                isOk: true,
+                error: false
+            }
+        }
+        case SETERROR: {
+            return {
+                ...state,
+                error:true
             }
         }
         default: 
@@ -24,7 +33,8 @@ export const registerReducer = (state = initialState, action:RegisterAction):Sta
 }
 
 const allActionCreators = {
-    setRegister:() => ({type:SETREGISTER})
+    setRegister:() => ({type:SETREGISTER}),
+    setError: () => ({type:SETERROR})
 }
 
 /////////
@@ -33,8 +43,12 @@ const allActionCreators = {
 
 export const toRegister = (dataRegister: Register):RegisterThunk => async (dispatch) => {
     const data = await getUserAuth.getRegister(dataRegister)
-    if(data)
+    if(data.isSave) {
         dispatch(allActionCreators.setRegister())
+    }
+    else {
+        dispatch(allActionCreators.setError())
+    }
 }
 
 type RegisterAction = ReturnType<AllActions<typeof allActionCreators>>

@@ -6,6 +6,8 @@ import AddIcon from '@material-ui/icons/Add';
 import { makeStyles } from '@material-ui/core/styles';
 import { CssBaseline, Fab, Tooltip } from '@material-ui/core';
 import { ModalWindow } from '../Modal/Modal';
+import { STAGEMAP } from '../../Helps/StageMap';
+import { AdminPanel } from './AdminPanel';
 
 
 const useStyles = makeStyles({
@@ -16,61 +18,54 @@ const useStyles = makeStyles({
   },
 })
 
-export const data = [
-  {
-    id:'1',
-    descr: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius!',
-    comments: [],
-    name: 'Article'
-  },
-  {
-    id:'2',
-    descr: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos laboriosam rerum enim vel aperiam maxime, voluptate dicta ipsam, voluptates facere, modi quaerat debitis incidunt delectus inventore a quo laborum eius!',
-    comments: [],
-    name: 'Article'
-  }
-]
-
-const Reader = ({login, role, articles, isAuthor, authorId, postArticle}:ownProps) => {  
+const Reader = ({login, role, articles, isAuthor, autor, postArticle, newReview, isReviewer, isEditor, isAdmin, review }:ownProps) => {  
   const classes = useStyles()
 
   const [open, setOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false)
 
   const handleModal = () => {
     setOpen(!open)
   }
 
-  const onSave = ({title, descr}:SaveNewArticle) => {
-    postArticle({title, descr, authorId})
+  const onSave = ({title, descr, document,category}:SaveNewArticle) => {
+    postArticle({title, descr, autor, document,category})
     setOpen(false)
   }
+
+  const authorCards = articles.filter(el => el.author?.login === login)
+  const reviewerCards = articles.filter(el => el.stage === (STAGEMAP['waiting reviewer'] || el.stage === STAGEMAP['waiting editor']) && (el.review?el.review[0].reviewer.login===login:null)||el.review?login===el.review[0].reviewer.login:null)
+  const editorCards = articles.filter(el => el.stage === STAGEMAP['waiting editor'] )
   
   return (
     <div>
       <CssBaseline />
-      <Menu login={login} role={role}/>
+      <Menu setShowAll={setShowAll} login={login} role={role}/>
       <div>
-        {articles.map(mag => {
-          return <div className='container' key={mag.id}>
-            <Cards
-              descr={mag.descr}
-              name={mag.title}
-              id={mag.id}
-              // @ts-ignore
-              author={mag.autor}
-              login={login}
-            />
-          </div>
-        })}
+        {
+          isAuthor &&  <HelpComponent item={authorCards} login={login} newReview={newReview}/>
+        }
+        {
+          isReviewer &&  <HelpComponent item={reviewerCards} login={login} newReview={newReview}/>
+        }
+        {
+          isEditor && <HelpComponent item={editorCards} login={login} newReview={newReview}/>
+        }
+        {
+          isAdmin && <AdminPanel/>
+        }
+        {
+          showAll && <HelpComponent item={articles} login={login} newReview={newReview}/>
+        }
       </div>
-      {isAuthor&&
+      {isAuthor &&
         <Tooltip onClick={handleModal} title="Add" aria-label="add" className={classes.btn}>
           <Fab color="primary" >
             <AddIcon />
           </Fab>
         </Tooltip>
       }
-      {open&&
+      {open &&
         <ModalWindow 
           handleModal={handleModal}
           open={open}
@@ -81,7 +76,30 @@ const Reader = ({login, role, articles, isAuthor, authorId, postArticle}:ownProp
   );
 }
 
-
+const HelpComponent = (props:any) => {
+  const {item, login, newReview} = props
+  return (
+    <>
+    {
+      item.map((mag:any) => {
+        return <div className='container' key={mag.id}>
+          <Cards
+            descr={mag.descr}
+            name={mag.title}
+            id={mag.id}
+            author={mag.author}
+            login={login}
+            stage={mag.stage}
+            review={mag.review}
+            newReview={newReview}
+            category={mag.category}
+          />
+        </div>
+      })
+    }
+    </>
+  )
+}
 export default Reader
 
 type ownProps = {
@@ -89,6 +107,11 @@ type ownProps = {
   role: string| null
   articles: Array<Articles>
   isAuthor: boolean,
-  authorId: string | null
+  isEditor: boolean,
+  isReviewer: boolean,
+  isAdmin: boolean,
+  autor: string | null,
+  review: any,
   postArticle: (value:SaveNewArticle) => void
+  newReview: (articleId:string, userId:string, review:string) => void
 }

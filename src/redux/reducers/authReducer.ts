@@ -9,7 +9,7 @@ const SETLOGOUT = 'SETLOGOUT'
 const SETINIT = 'SETINIT'
 
 const initialState = {
-    authorId: null as string | null,
+    autor: null as string | null,
     login: null as null | string,
     password: null as null | string,
     isInit: false,
@@ -17,6 +17,8 @@ const initialState = {
     role: '' ,
     isAuthor: false,
     isEditor: false,
+    isReviewer: false,
+    isAdmin: false,
     isDark: false
 }
 
@@ -26,9 +28,11 @@ export const authReducer = (state=initialState, action:ActionsAuth):StateAuth =>
             return {
                 ...state,
                 ...action.payLoad,
-                authorId: action.payLoad.authorId,
+                autor: action.payLoad.autor,
                 isAuthor: action.payLoad.isAuthor,
                 isEditor: action.payLoad.isEditor,
+                isReviewer: action.payLoad.isReviewer,
+                isAdmin: action.payLoad.isAdmin
             }
         }
         case SETINIT: {
@@ -76,19 +80,20 @@ export const initialization = ():AuthThunkType => async dispatch => {
 
 export const getAuth = (value: Auth):AuthThunkType => async (dispatch) => {
     const data =  await getUserAuth.getAuth(value)
-    debugger
     if(data.isAuth) {
         localStorage.setItem('login', `${value.login}`);
         localStorage.setItem('password', `${value.password}`);
-        let authorId = data.id ? data.id : null
+        let autor = data.id ? data.id : null
         dispatch(allActionCreaters.setAuth({
-            isAuth:true,
+            isAuth: true,
             login: value.login,
             password:value.password,
             role: data.role,
             isAuthor: data.isAuthor,
             isEditor: data.isEditor,
-            authorId
+            isReviewer: data.isReviewer,
+            isAdmin: data.isAdmin,
+            autor
         }))
     } else {
         dispatch(stopSubmit('login', {_error:'Wrong login or Password'}))
@@ -114,5 +119,7 @@ type PayLoad = {
     isAuth: boolean
     isAuthor: boolean,
     isEditor: boolean,
-    authorId: string | null
+    isReviewer: boolean,
+    isAdmin: boolean,
+    autor: string | null
 }

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import image from '../../assets/img.jpg'
 import { useDispatch, useSelector } from 'react-redux';
 import { getArticles } from '../../redux/reducers/articlesReducer';
+import { STAGEMAP } from '../../Helps/StageMap';
 
 const useStyles = makeStyles((theme) => ({
   mainFeaturedPost: {
@@ -53,14 +54,14 @@ const useStyles = makeStyles((theme) => ({
 export default function MainFeaturedPost() {
   const classes = useStyles();
   const dispatch = useDispatch()
-  const mainFeaturedPostarticle = useSelector(state => state.articles.articles[0])
+  const selectedFeaturedPostarticle = useSelector(state => state.articles.articles)
+  const mainFeaturedPostarticle = selectedFeaturedPostarticle[0]?.stage === STAGEMAP.approved ? selectedFeaturedPostarticle[0] : []
 
   const id = mainFeaturedPostarticle?mainFeaturedPostarticle.id:null
 
   useEffect(() => {
     dispatch(getArticles())
   }, [])
-
 
   return (
     <Paper className={classes.mainFeaturedPost} style={{ backgroundImage: `url(${image})` }}>

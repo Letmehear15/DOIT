@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
 import {logOut} from '../../redux/reducers/authReducer'
 import { Link } from 'react-router-dom';
@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Menu = (props:CommonProps) => {
+const Menu = ({setShowAll=() => {}, ...props}:CommonProps) => {
   const classes = useStyles();
+  const isEditor = useSelector((state:RootState) => state.auth.isEditor)
 
   return (
     <div className={classes.root}>
@@ -38,6 +39,9 @@ const Menu = (props:CommonProps) => {
             {props.login}
           </div>
           <div>
+            {
+              isEditor && <Button onClick={() => setShowAll(true)} color="inherit">Show all articles</Button>
+            }
             <Link to="/home" className={classes.link}>
               <Button color="inherit">Back to home page</Button>
             </Link>
@@ -64,6 +68,7 @@ type mapState = {
 }
 type ownProps = {
   login: string | null
+  setShowAll?: (prop:boolean) => void
   role: string| null
 }
 

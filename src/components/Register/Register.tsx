@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Field, reduxForm, InjectedFormProps, formValueSelector, WrappedFieldInputProps } from 'redux-form'
+import { Field, reduxForm, InjectedFormProps, formValueSelector } from 'redux-form'
 import { ValidatorInput } from '../VaidatorInfo/ValidatorInfo';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/reduxStore';
@@ -8,7 +8,8 @@ import { Link } from 'react-router-dom';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import {Register} from '../../types/Auth'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Avatar, Button, Container, CssBaseline, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@material-ui/core';
+import { Avatar, Button, Container, CssBaseline, Grid, Typography } from '@material-ui/core';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 
 const useStyles = makeStyles((theme: Theme) => ({ 
@@ -57,10 +58,6 @@ const LoginReduxForm:FC<InjectedFormProps<ValueForm>> = (props) => {
                 type="password" 
                 placeholder="Password"
                 />  
-            <Field 
-                name="role" 
-                component={SelectForm}
-            />
             <Button
                 fullWidth
                 variant="contained"
@@ -74,35 +71,13 @@ const LoginReduxForm:FC<InjectedFormProps<ValueForm>> = (props) => {
     )
 }
 
-type SelectProps = {
-    input: WrappedFieldInputProps
-    label: string
-}
-
-const SelectForm:FC<SelectProps> = ({input, label}) => {
-    const classes = useStyles()
- return (
-    <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">{label}</InputLabel>
-        <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            {...input}
-        >
-        <MenuItem value=''></MenuItem>
-        <MenuItem value='author'>Author</MenuItem>
-
-        </Select>
-    </FormControl>
- )
-}
 
 const LoginForm = reduxForm<ValueForm>({
     form: 'register'
 })(LoginReduxForm)
 
 const Login:FC<CommonProps> = (props) => {
-    const { login, password, role, isOk } = props
+    const { login, password, role, isOk, error } = props
     const classes = useStyles()
     const onSubmit = () => {
         props.toRegister({login, password, role})
@@ -127,6 +102,7 @@ const Login:FC<CommonProps> = (props) => {
                     </Grid>
                 </Grid>
                 {isOk && <div style={{marginTop:'20px'}}> YOU WERE REGISTERED </div>}
+                {error && <FormHelperText error>The user is already exists</FormHelperText>}
             </div>
         </Container>
     )
@@ -141,6 +117,7 @@ const mapStateToProps = (state:RootState):MapState => {
 
     return {
         isOk: state.register.isOk,
+        error: state.register.error,
         login,
         password,
         role
@@ -163,6 +140,7 @@ type MapState = {
     login: string
     password: string
     role: string
+    error: boolean
 }
 
 type CommonProps = MapDispatch&MapState

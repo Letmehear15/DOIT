@@ -69,6 +69,9 @@ const useStyles = makeStyles({
     },
     descrInput: {
         width:'60%'
+    },
+    reviewText: {
+        marginTop: 20
     }
 })
   
@@ -89,7 +92,7 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
         setTitle(article.title)
         setDescr(article.descr)
     },[article.title, article.descr])
-    
+
     if(isLoad) {
         return (
             <div style={{minHeight: '100vh'}}>
@@ -100,7 +103,7 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
 
     if(isDelete) {
         return (
-            <Redirect to='/home'/>      
+            <Redirect to='/admin'/>      
         )
     }
     
@@ -113,8 +116,9 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
         deleteArticle(id)
     }
 
+    const currentAuthor = login === article.author?.login
 
-    const currentAuthor = login === article.author.login
+    const isReviewText = article.review ? article.review[0].review : null
 
     return (
         <div style={{paddingBottom: 10, minHeight: '100vh'}}>
@@ -137,7 +141,10 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                             />
                         }
                         <span className={classes.author}>
-                            Author: {article.author.login}
+                            Author: {article.author?.login}
+                        </span>
+                        <span className={classes.author}>
+                            Author: {article.category}
                         </span>
                         {
                             !edit ? 
@@ -156,6 +163,13 @@ const Article:FC<MapState&MapDispatch> = ({login, role, getFullArticle, article,
                                 className={classes.descrInput}
                             />
                         }
+                        {isReviewText &&
+                            <div className={classes.reviewText}>
+                                <h3>Review: </h3>
+                                <Typography>
+                                    {isReviewText}
+                                </Typography>
+                            </div>}
                     </CardContent>
                     {
                         (currentAuthor||isEditor)&&

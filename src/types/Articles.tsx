@@ -1,3 +1,4 @@
+import { STAGEMAP } from "../Helps/StageMap";
 import { Autor } from "./Autor";
 import { CommentsType } from "./Comments";
 
@@ -7,12 +8,17 @@ export type Articles = {
     descr: string
     comments: Array<CommentsType>
     author: Autor
+    stage:  STAGEMAP,
+    category?: string,
+    review?: any
 }
 
 export type SaveNewArticle = {
-    authorId?: string | null
+    autor?: string | null
     title: string
     descr: string
+    document?: File
+    category: string
 }
 
 export type ArticleEdit = {

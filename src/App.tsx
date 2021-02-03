@@ -16,6 +16,8 @@ import { Paper } from '@material-ui/core';
 import Home from './components/Home/Blog';
 import About from './components/About/About';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { AllCards } from './components/Cards/AllCards';
+import CategoryCards from './components/Home/FeaturedPost'
 
 const App:FC<CommonProps> = (props) => {
 
@@ -34,10 +36,12 @@ const App:FC<CommonProps> = (props) => {
       <Paper >
         <Switch>
           <Route path='/home' component={() => <Home/>}/>
+          <Route path='/admin/all' component={() => <AllCards/>}/>
           <Route path='/about' component={() => <About/>}/>
-          <Route path='/reader' component={() => <ReaderContainer/>}/>
+          <Route exact path='/admin' component={() => <ReaderContainer/>}/>
           <Route exact path='/login' component={() => <Login/>}/>
           <Route path='/register' component={() => <Register/>}/>
+          <Route path='/category/:id'><CategoryCards/></Route>
           <Route path='/article/:id'><Article/></Route>
           <Redirect from='/' to='/home'/>
         </Switch>
